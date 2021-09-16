@@ -24,6 +24,12 @@ spec:
       labels:
         app: {{ template "name" . }}
         release: {{ .Release.Name }}
+      {{- if .Values.metrics.enabled }}
+      annotations:
+        prometheus.io/scrape: {{ .Values.metrics.scrape | quote}}
+        prometheus.io/path: "/metrics"
+        prometheus.io/port: {{ add .Values.service.internalPort 3 | quote}}
+      {{- end }}
     spec:
       containers:
         - name: {{ .Chart.Name }}
@@ -31,6 +37,9 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: {{ .Values.service.internalPort }}
+            {{- if .Values.metrics.enabled }}
+            - containerPort: {{ add .Values.service.internalPort 3 | quote}}
+            {{- end }}
           env:
             - name: CF_INSTANCE_INDEX
               value: "0"
@@ -54,6 +63,8 @@ spec:
               value: "http://{{ .Release.Name }}.{{ .Values.ingress.domain }}/"
             {{- end }}
             {{- end }}
+            - name: METRICS_SERVICE_ENABLED
+              value: {{ .Values.metrics.enabled | quote}}
             - name: MXRUNTIME_DatabaseHost
               value: {{ .Values.mendixSystem.database.host | quote}}
             - name: MXRUNTIME_DatabaseType
@@ -175,6 +186,12 @@ spec:
       labels:
         app: {{ template "name" . }}
         release: {{ .Release.Name }}
+      {{- if .Values.metrics.enabled }}
+      annotations:
+        prometheus.io/scrape: {{ .Values.metrics.scrape | quote}}
+        prometheus.io/path: "/metrics"
+        prometheus.io/port: {{ add .Values.service.internalPort 3 | quote}}
+      {{- end }}
     spec:
       containers:
         - name: {{ .Chart.Name }}
@@ -182,6 +199,9 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: {{ .Values.service.internalPort }}
+            {{- if .Values.metrics.enabled }}
+            - containerPort: {{ add .Values.service.internalPort 3 | quote}}
+            {{- end }}
           env:
             - name: CF_INSTANCE_INDEX
               value: "1"
@@ -205,6 +225,8 @@ spec:
               value: "http://{{ .Release.Name }}.{{ .Values.ingress.domain }}/"
             {{- end }}
             {{- end }}
+            - name: METRICS_SERVICE_ENABLED
+              value: {{ .Values.metrics.enabled | quote}}
             - name: MXRUNTIME_DatabaseHost
               value: {{ .Values.mendixSystem.database.host | quote}}
             - name: MXRUNTIME_DatabaseType

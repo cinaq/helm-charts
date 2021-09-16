@@ -44,6 +44,10 @@ mendixSystem:
   # Empty value here is intentional
   # required
   adminPassword: Hello0123!!
+metrics:
+  # if enabled, metrics are exposed at service.internalPort + 3 e.d. localhost:8083/metrics
+  enabled: true
+  scrape: true
 image:
   repository: "cinaq/hackme"
   tag: "latest"
