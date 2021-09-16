@@ -1,0 +1,131 @@
+# initial replica, if:
+# less than 1    => no leader or slaves
+# equal 1        => 1 leader no slaves
+# larger than 1  => 1 leader, rest slaves
+replicaCount: 1
+configuration:
+  enabled: true
+  envs:
+    # examples
+    - name: SCHEDULED_EVENTS
+      value: ALL
+    - name: MX_Module_Constant
+      value: test
+    - name: MX_App_EnvironmentName
+      value: acceptance
+mendixSystem:
+  # this is valid license for global usage
+  # optional
+  licenseId:
+  # optional
+  licenseKey:
+  database:
+    # required
+    type: PostgreSQL
+    # required
+    host: mendix-postgres:5432
+    # required
+    dbname: mendix
+    # required
+    username: postgres
+    # required
+    password: postgres12!
+  objectstore:
+    # required
+    s3BucketName: test-mx-app
+    # required
+    s3Endpoint: http://11.22.33.44:9000
+    # required
+    s3AccessKeyId: keyid
+    # required
+    s3SecretAccessKey: accesskey
+  # mandatory and must contain: lowercase, uppercase, numbers and special characters
+  # Can be used to login as Admin with username MxAdmin (default in Mendix app)
+  # Empty value here is intentional
+  # required
+  adminPassword: Hello0123!!
+image:
+  repository: "cinaq/hackme"
+  tag: "latest"
+  pullPolicy: "Always"
+imagePullSecrets:
+  - name: cicd
+nodeSelector:
+  enabled: true
+  nodetype: app
+resources:
+  limits:
+    cpu: 1
+    memory: 1Gi
+  requests:
+    cpu: 0.5
+    memory: 512Mi
+service:
+  type: ClusterIP
+  externalPort: 80
+  internalPort: 8080
+ingress:
+  enabled: true
+  domain: paas
+  annotations:
+    kubernetes.io/ingress.class: nginx
+  addHosts: false
+  hosts:
+    - foo.domain.com
+    - bar.domain.com
+  tls:
+    enabled: false
+  # Secrets must be manually created in the namespace.
+    secretName: secret-tls
+networkPolicy:
+  enabled: true
+  ingress:
+    allowed: true
+autoscale:
+  # only affects slave deployment
+  # If enabled, slave replicas starts with minSlaveReplicas
+  enabled: false
+  minSlaveReplicas: 1
+  maxSlaveReplicas: 3
+  targetCPUUtilizationPercentage: 70
+strategy:
+  enabled: false
+  type: RollingUpdate
+  rollingUpdate:
+    maxSurge: 1
+    maxUnavailable: 0
+readinessProbe:
+  enabled: true
+  type: httpGet
+  httpGet:
+    path: /
+    port: 8080
+  exec: 
+    command:
+  tcpSocket:
+    port:
+  initialDelaySeconds: 120
+  periodSeconds: 10
+  failureThreshold: 3
+  timeoutSeconds: 1
+  successThreshold: 1
+livenessProbe:
+  enabled: true
+  type: httpGet
+  httpGet:
+    path: /
+    port: 8080
+  exec: 
+    command:
+  tcpSocket:
+    port:
+  initialDelaySeconds: 200
+  periodSeconds: 20
+  failureThreshold: 3
+  timeoutSeconds: 1
+  successThreshold: 1
+lifecycle:
+  prestop:
+    enabled: false
+    command: /opt/eap/bin/stop.sh
+timezone: Asia/Seoul
