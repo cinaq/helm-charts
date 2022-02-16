@@ -1,16 +1,3 @@
-# Mendix Chart
-Mendix chart to run Mendix apps
+# CINAQ helm-charts
 
-## Chart apiVersion
-
-v1
-
-
-## Chart name
-
-mendix
-
-
-## Chart Version
-
-1.0.0
+Various helm-charts maintained by CINAQ
