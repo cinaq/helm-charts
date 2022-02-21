@@ -38,7 +38,7 @@ spec:
           ports:
             - containerPort: {{ .Values.service.internalPort }}
             {{- if .Values.metrics.enabled }}
-            - containerPort: {{ add .Values.service.internalPort 3 | quote}}
+            - containerPort: {{ add .Values.service.internalPort 3}}
             {{- end }}
           env:
             - name: CF_INSTANCE_INDEX
@@ -200,7 +200,7 @@ spec:
           ports:
             - containerPort: {{ .Values.service.internalPort }}
             {{- if .Values.metrics.enabled }}
-            - containerPort: {{ add .Values.service.internalPort 3 | quote}}
+            - containerPort: {{ add .Values.service.internalPort 3 }}
             {{- end }}
           env:
             - name: CF_INSTANCE_INDEX
