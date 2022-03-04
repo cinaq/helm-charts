@@ -20,18 +20,24 @@ spec:
       http:
         paths:
           - backend:
-              serviceName: {{ $serviceName }}
-              servicePort: {{ $servicePort }}
+              service:
+                name: {{ $serviceName }}
+                port:
+                  number: {{ $servicePort }}
             path: /
+            pathType: Prefix
     {{- if .Values.ingress.addHosts }}
     {{- range .Values.ingress.hosts }}
     - host: {{ . }}
       http:
         paths:
           - backend:
-              serviceName: {{ $serviceName }}
-              servicePort: {{ $servicePort }}
+              service:
+                name: {{ $serviceName }}
+                port:
+                  number: {{ $servicePort }}
             path: /
+            pathType: Prefix
     {{- end }}
     {{- end }}
   {{- if .Values.ingress.tls.enabled }}
