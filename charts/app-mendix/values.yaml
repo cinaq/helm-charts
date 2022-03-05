@@ -73,7 +73,7 @@ ingress:
   domain: paas
   annotations:
     kubernetes.io/ingress.class: nginx
-    cert-manager.io/cluster-issuer: letsencrypt
+    kubernetes.io/tls-acme: "true"
   addHosts: false
   hosts:
     - foo.domain.com
