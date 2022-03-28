@@ -53,7 +53,7 @@ image:
   tag: "latest"
   pullPolicy: "Always"
 imagePullSecrets:
-  - name: cicd
+  - name: dockerconfigjson
 nodeSelector:
   enabled: true
   nodetype: app
