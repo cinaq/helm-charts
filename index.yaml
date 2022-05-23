@@ -76,6 +76,52 @@ entries:
   loki-stack:
   - apiVersion: v1
     appVersion: v2.1.0
+    created: "2022-05-23T10:10:12.167186709Z"
+    dependencies:
+    - condition: loki.enabled
+      name: loki
+      repository: https://grafana.github.io/helm-charts
+      version: ^2.10.1
+    - condition: promtail.enabled
+      name: promtail
+      repository: https://grafana.github.io/helm-charts
+      version: ^3.11.0
+    - condition: fluent-bit.enabled
+      name: fluent-bit
+      repository: https://grafana.github.io/helm-charts
+      version: ^2.3.0
+    - condition: grafana.enabled
+      name: grafana
+      repository: https://grafana.github.io/helm-charts
+      version: ~6.24.1
+    - condition: prometheus.enabled
+      name: prometheus
+      repository: https://prometheus-community.github.io/helm-charts
+      version: ~15.5.3
+    - condition: filebeat.enabled
+      name: filebeat
+      repository: https://helm.elastic.co
+      version: ~7.17.1
+    - condition: logstash.enabled
+      name: logstash
+      repository: https://helm.elastic.co
+      version: ~7.17.1
+    description: 'Loki: like Prometheus, but for logs.'
+    digest: 69e2577c17e38d8f2ee38e4c5a1b3b90304815aeddd3c2c4ef2c83312ddc8165
+    home: https://grafana.com/loki
+    icon: https://raw.githubusercontent.com/grafana/loki/master/docs/sources/logo.png
+    kubeVersion: ^1.10.0-0
+    maintainers:
+    - email: lokiproject@googlegroups.com
+      name: Loki Maintainers
+    name: loki-stack
+    sources:
+    - https://github.com/grafana/loki
+    urls:
+    - https://github.com/cinaq/helm-charts/releases/download/loki-stack-2.6.3/loki-stack-2.6.3.tgz
+    version: 2.6.3
+  - apiVersion: v1
+    appVersion: v2.1.0
     created: "2022-03-12T15:25:08.825685434Z"
     dependencies:
     - condition: loki.enabled
@@ -120,4 +166,4 @@ entries:
     urls:
     - https://github.com/cinaq/helm-charts/releases/download/loki-stack-2.6.2/loki-stack-2.6.2.tgz
     version: 2.6.2
-generated: "2022-03-12T15:25:08.825709334Z"
+generated: "2022-05-23T10:10:12.167367311Z"
