@@ -64,7 +64,7 @@ spec:
               value: "http://{{ .Release.Name }}.{{ .Values.ingress.domain }}/"
             {{- end }}
             {{- end }}
-            - name: METRICS_SERVICE_ENABLED
+            - name: OPENMETRICS_ENABLED
               value: {{ .Values.metrics.enabled | quote}}
             - name: MXRUNTIME_DatabaseHost
               value: {{ .Values.mendixSystem.database.host | quote}}
