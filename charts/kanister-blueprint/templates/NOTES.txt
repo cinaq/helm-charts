@@ -1,0 +1,11 @@
+## Kanister bueprint backup helm chart
+
+Resources included:
+ - kanister blueprint
+ - role and rolebinding
+ - serviceAccount
+
+{{- if .Values.blueprint.create -}}
+Get blueprint {{ include "kanister-blueprint.blueprintName" . }} details
+kubectl describe blueprint -n {{ .Release.Namespace }} {{ include "kanister-blueprint.blueprintName" . }}
+{{- end }}

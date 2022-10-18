@@ -1,0 +1,18 @@
+Mysql backup helm chart with kanister actionset
+
+Helm Chart Resources:
+        - Actionset
+        - cronJob
+        - Secret
+
+{{- if .Values.actionSet.create  -}}
+Actionset {{ include "kanister-actionset.actionSetName" . }} added
+Get actionset details run command:
+kubectl describe actionset -n {{ .Release.Namespace }} {{ include "kanister-actionset.actionSetName" . }}
+{{- end }}
+
+{{- if .Values.cronJob.create  -}}
+Cronjob {{ include "kanister-actionset.cronJobName" . }} added
+Get cronjob details run command:
+kubectl descrobe cronjob -n {{ .Release.Namespace }} {{ include "kanister-actionset.actionSetName" . }}
+{{- end }}

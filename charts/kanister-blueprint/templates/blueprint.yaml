@@ -1,0 +1,101 @@
+{{- if .Values.blueprint.create -}}
+apiVersion: cr.kanister.io/v1alpha1
+kind: Blueprint
+metadata:
+  name: {{ include "kanister-blueprint.blueprintName" . }}
+  labels:
+    {{- include "kanister-blueprint.labels" . | nindent 4 }}
+  {{- with .Values.blueprint.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+actions:
+  backup:
+    outputArtifacts:
+      pgCloudDump:
+        keyValue:
+          backupLocation: {{ `"{{ .Phases.pgDump.Output.backupLocation }}"` }}
+    phases:
+    - func: KubeTask
+      name: pgDump
+      objects:
+        pgSecret:
+          kind: Secret
+          name:      {{ `'{{ index .Object.metadata "name" | toString }}'` }}
+          namespace: {{ `'{{ index .Object.metadata "namespace" | toString }}'` }}
+      args:
+        image: {{ .Values.blueprint.image.repository }}:{{ .Values.blueprint.image.tag }}
+        namespace: {{ .Release.Namespace }}
+        command:
+        - bash
+        - -o
+        - errexit
+        - -o
+        - pipefail
+        - -c
+        - |
+          set +o xtrace
+          export AWS_SECRET_ACCESS_KEY={{ `{{ .Profile.Credential.Secret.Data.aws_secret_access_key | toString }}` }}
+          export AWS_ACCESS_KEY_ID={{ `{{ .Profile.Credential.Secret.Data.aws_access_key_id | toString }}` }}
+          export PGHOST={{ `"{{ index .Phases.pgDump.Secrets.pgSecret.Data "postgres-host" }}"` }}
+          export PGUSER={{ `"{{ index .Phases.pgDump.Secrets.pgSecret.Data "postgres-username" | toString }}"` }}
+          export PGPASSWORD={{ `"{{ index .Phases.pgDump.Secrets.pgSecret.Data "postgres-password" | toString }}"` }}
+          set -o xtrace
+          BACKUP_DATE={{ `{{ toDate "2006-01-02T15:04:05.999999999Z07:00" .Time | date "2006-01-02T15:04:05Z07:00" }}` }}
+          TENANT={{ `{{ .Options.tenant }}` }}
+          APPLICATION={{ `{{ .Options.applications }}` }}
+          ENV={{ `{{ .Options.environment }}` }}
+          BACKUP_LOCATION=${TENANT}-${APPLICATION}-${ENV}/db-${BACKUP_DATE}.sql.gz
+          pg_dump --clean -U $PGUSER -d $APPLICATION-$ENV-db | gzip -c | kando location push --profile {{ `'{{ toJson .Profile }}'` }} --path "${BACKUP_LOCATION}" -
+          kando output backupLocation "${BACKUP_LOCATION}"
+
+  restore:
+    inputArtifactNames:
+    - pgCloudDump
+    phases:
+    - func: KubeTask
+      name: pgRestore
+      objects:
+        pgSecret:
+          kind: Secret
+          name:      {{ `'{{ index .Object.metadata "name" | toString }}'` }}
+          namespace: {{ `'{{ index .Object.metadata "namespace" | toString }}'` }}
+      args:
+        image: {{ .Values.blueprint.image.repository }}:{{ .Values.blueprint.image.tag }}
+        namespace: {{ .Release.Namespace }}
+        command:
+        - bash
+        - -o
+        - errexit
+        - -o
+        - pipefail
+        - -c
+        - |
+          set +o xtrace
+          export AWS_SECRET_ACCESS_KEY={{ `{{ .Profile.Credential.Secret.Data.aws_secret_access_key | toString }}` }}
+          export AWS_ACCESS_KEY_ID={{ `{{ .Profile.Credential.Secret.Data.aws_access_key_id | toString }}` }}
+          export PGHOST={{ `"{{ index .Phases.pgDump.Secrets.pgSecret.Data "postgres-host" }}"` }}
+          export PGUSER={{ `"{{ index .Phases.pgRestore.Secrets.pgSecret.Data "postgres-name" | toString }}"` }}
+          export PGPASSWORD={{ `"{{ index .Phases.pgRestore.Secrets.pgSecret.Data "postgres-password" | toString }}"` }}
+          set -o xtrace
+          BACKUP_LOCATION={{ `{{ .ArtifactsIn.pgCloudDump.KeyValue.backupLocation }}` }}
+          kando location pull --profile {{ `'{{ toJson .Profile }}'` }} --path "${BACKUP_LOCATION}" - | gunzip -c -f | sed 's/LOCALE/LC_COLLATE/' | psql -q -U "${PGUSER}"
+  delete:
+    inputArtifactNames:
+      - pgCloudDump
+    phases:
+    - func: KubeTask
+      name: deleteDump
+      args:
+        image: {{ .Values.blueprint.image.repository }}:{{ .Values.blueprint.image.tag }}
+        namespace: {{ .Release.Namespace }}
+        command:
+          - bash
+          - -o
+          - errexit
+          - -o
+          - pipefail
+          - -c
+          - |
+            kando location delete --profile {{ `'{{ toJson .Profile }}'` }} --path {{ `'{{ .ArtifactsIn.pgCloudDump.KeyValue.backupLocation }}'` }}
+{{- end  }}
