@@ -109,6 +109,28 @@ entries:
     urls:
     - https://github.com/cinaq/helm-charts/releases/download/app-mendix-1.0.0/app-mendix-1.0.0.tgz
     version: 1.0.0
+  kanister-actionset:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2022-10-25T11:57:48.580205541Z"
+    description: A Helm chart for Kubernetes
+    digest: 8de892790d22b2708817e989b531a62fb0686a6f29a3bde9c064f07a7edbaf8e
+    name: kanister-actionset
+    type: application
+    urls:
+    - https://github.com/cinaq/helm-charts/releases/download/kanister-actionset-0.1.0/kanister-actionset-0.1.0.tgz
+    version: 0.1.0
+  kanister-blueprint:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2022-10-25T11:57:48.753301388Z"
+    description: A Helm chart for Kubernetes
+    digest: 4dd14ba46791cb9c2f54dcc875c38b171b289f03a49641f40875ce1cec5e90c7
+    name: kanister-blueprint
+    type: application
+    urls:
+    - https://github.com/cinaq/helm-charts/releases/download/kanister-blueprint-0.1.0/kanister-blueprint-0.1.0.tgz
+    version: 0.1.0
   loki-stack:
   - apiVersion: v1
     appVersion: v2.1.0
@@ -202,4 +224,4 @@ entries:
     urls:
     - https://github.com/cinaq/helm-charts/releases/download/loki-stack-2.6.2/loki-stack-2.6.2.tgz
     version: 2.6.2
-generated: "2022-07-05T13:48:18.134001335Z"
+generated: "2022-10-25T11:57:48.75340929Z"
