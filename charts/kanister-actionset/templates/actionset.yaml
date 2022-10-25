@@ -1,0 +1,30 @@
+{{- if .Values.actionSet.create  -}}
+apiVersion: cr.kanister.io/v1alpha1
+kind: ActionSet
+metadata:
+  creationTimestamp: null
+  name: {{ include "kanister-actionset.actionSetName" . }}
+spec:
+  actions:
+  - blueprint: {{ .Values.blueprintName }}
+    name: backup
+    object:
+      apiVersion: v1
+      group: ""
+      kind: ""
+      name: {{ include "kanister-actionset.secretName" . }}
+      namespace: {{ .Release.Namespace }}
+      resource: secrets
+    options:
+      application: {{ .Values.application }}
+      tenant: {{ .Values.tenant }}
+      environment: {{ .Values.environment }}
+    preferredVersion: ""
+    profile:
+      apiVersion: ""
+      group: ""
+      kind: ""
+      name: {{ .Values.profileName }}
+      namespace: {{ .Release.Namespace }}
+      resource: ""
+{{- end }}

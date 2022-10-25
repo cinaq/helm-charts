@@ -1,0 +1,56 @@
+---
+{{ if .Values.role.create -}}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ include "kanister-blueprint.roleName" . }}-role
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  - secrets
+  verbs:
+  - get
+  - list
+- apiGroups:
+  - v1
+  resources:
+  - configmaps
+  - secrets
+  verbs:
+  - get
+  - list
+- apiGroups:
+  - profiles.cr.kanister.io
+  resources:
+  - profile
+  verbs:
+  - get
+  - list
+- apiGroups:
+  - cr.kanister.io
+  resources:
+  - profiles
+  - blueprints
+  - actionsets
+  verbs:
+  - get
+  - list
+  - create
+{{- end }}
+---
+{{ if .Values.roleBinding.create -}}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ include "kanister-blueprint.roleBindingName" . }}-rb
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ include "kanister-blueprint.roleName" . }}-role
+subjects:
+- kind: ServiceAccount
+  name: {{ include "kanister-blueprint.serviceAccountName" . }}-sa
+  namespace: {{ .Release.Namespace }}
+{{- end }}

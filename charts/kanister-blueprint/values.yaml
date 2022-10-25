@@ -1,0 +1,39 @@
+# Default values for kanister-blueprint.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+profile: default-profile
+
+blueprint:
+  create: true
+  name: ""
+  image:
+    repository: ghcr.io/kanisterio/postgres-kanister-tools
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "0.81.0"
+  # Annotations to add to the service account
+  annotations: {}
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+role:
+  create: true
+  annotations: {}
+  name: ""
+
+roleBinding:
+  create: true
+  annotations: {}
+  name: ""

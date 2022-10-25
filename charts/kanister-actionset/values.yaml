@@ -1,0 +1,40 @@
+# Default values for mysql-backup.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+blueprintName: ""
+profileName: "default-profile"
+actionsetName: ""
+application: ""
+tenant: ""
+environment: ""
+
+secret:
+  # Specifies whether a secret should be created
+  create: true
+  # Annotations to add to the secret
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+  # Database username Secret data
+  username: root
+  # Database user password Secret data
+  password: strongpass
+  # Database host
+  backupHost: ""
+  restoreHost: ""
+
+cronJob:
+  create: true
+  name: ""
+  annotations: {}
+
+actionSet:
+  create: false
+  name: ""
+  annotations: {}
