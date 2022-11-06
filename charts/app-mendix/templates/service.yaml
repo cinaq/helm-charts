@@ -1,12 +1,9 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ template "fullname" . }}
+  name: {{ template "app-mendix.fullname" . }}
   labels:
-    app: {{ template "name" . }}
-    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
+    {{- include "app-mendix.labels" . | nindent 4 }}
 spec:
   type: {{ .Values.service.type }}
   ports:
@@ -14,5 +11,4 @@ spec:
       targetPort: {{ .Values.service.internalPort }}
       protocol: TCP
   selector:
-    app: {{ template "name" . }}
-    release: {{ .Release.Name }}
+    {{- include "app-mendix.selectorLabels" . | nindent 6 }}

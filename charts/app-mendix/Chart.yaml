@@ -1,4 +1,4 @@
-apiVersion: v1
+apiVersion: v2
 name: app-mendix
 version: 1.0.8
 description: Mendix Application Chart.
