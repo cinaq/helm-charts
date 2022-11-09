@@ -25,14 +25,8 @@ env: []
   #   value: acceptance
   # - name: TZ
   #   value: Europe/Amsterdam
-  # - name: LICENSE_ID
-  #   value: xxx
-  # - name: LICENSE_KEY
-  #   value: xxx
   # - name: PORT
   #   value: 8080
-  # - name: ADMIN_PASSWORD
-  #   value: "Hello0123!!"
   # - name: MXRUNTIME_ApplicationRootUrl
   #   value: "https://mx-app.example.com/"
   # - name: METRICS_SERVICE_ENABLED
@@ -43,14 +37,22 @@ env: []
   #   value: "PostgreSQL"
   # - name: MXRUNTIME_DatabaseName
   #   value: "mendix"
-  # - name: MXRUNTIME_DatabaseUserName
-  #   value: "postgres"
-  # - name: MXRUNTIME_DatabasePassword
-  #   value: "postgres12!"
   # - name: S3_BUCKET_NAME
   #   value: "test-mx-app"
   # - name: S3_ENDPOINT
   #   value: "http://minio:9000"
+
+secretEnv: []
+  # - name: LICENSE_ID
+  #   value: xxx
+  # - name: LICENSE_KEY
+  #   value: xxx
+  # - name: ADMIN_PASSWORD
+  #   value: "Hello0123!!"
+  # - name: MXRUNTIME_DatabaseUserName
+  #   value: "postgres"
+  # - name: MXRUNTIME_DatabasePassword
+  #   value: "postgres12!"
   # - name: S3_ACCESS_KEY_ID
   #   value: "keyid"
   # - name: S3_SECRET_ACCESS_KEY

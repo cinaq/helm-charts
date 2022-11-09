@@ -99,7 +99,7 @@ spec:
                 command: [{{ .Values.lifecycle.prestop.command }}]
           {{- end }}
           resources:
-            {{- toYaml .Values.resources | indent 12 }}
+            {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
