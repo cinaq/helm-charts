@@ -48,6 +48,11 @@ spec:
             - name: {{ .name | quote}}
               value: {{ .value | quote}}
           {{- end }}
+          {{- if .Values.secretEnv }}
+          envFrom:
+            - secretRef:
+              name: {{ template "app-mendix.fullname" $ }}
+          {{- end }}
           {{- if .Values.readinessProbe.enabled }}
           readinessProbe:
             {{- if eq "httpGet" .Values.readinessProbe.type }}
