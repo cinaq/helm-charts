@@ -48,10 +48,10 @@ spec:
             - name: {{ .name | quote}}
               value: {{ .value | quote}}
           {{- end }}
-          {{- if .Values.secretEnv }}
+          {{- if .Values.secretName }}
           envFrom:
             - secretRef:
-              name: {{ template "app-mendix.fullname" $ }}
+              name: {{ .Values.secretName }}
           {{- end }}
           {{- if .Values.readinessProbe.enabled }}
           readinessProbe:

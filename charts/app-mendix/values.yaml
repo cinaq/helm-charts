@@ -41,8 +41,6 @@ env: []
   #   value: "test-mx-app"
   # - name: S3_ENDPOINT
   #   value: "http://minio:9000"
-
-secretEnv: []
   # - name: LICENSE_ID
   #   value: xxx
   # - name: LICENSE_KEY
@@ -57,6 +55,12 @@ secretEnv: []
   #   value: "keyid"
   # - name: S3_SECRET_ACCESS_KEY
   #   value: "accesskey"
+
+# Secret name with mendix application runtime variables. Will be loaded as pod environment variables
+#  Example data
+#  data:
+#   ADMIN_PASSWORD: SGVsbG8wMTIzY2xlYXIK (base64)
+secretName: ""
 
 nodeSelector: {}
 
