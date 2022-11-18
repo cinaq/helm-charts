@@ -1,0 +1,117 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "app-mendix.fullname" . }}-leader
+  labels:
+    {{- include "app-mendix.labels" . | nindent 4 }}
+spec:
+{{- if ge .Values.replicaCount 1.0 }}
+  replicas: 1
+{{- else }}
+  replicas: 0
+{{- end }}
+  selector:
+    matchLabels:
+      {{- include "app-mendix.selectorLabels" . | nindent 6 }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        {{- include "app-mendix.labels" . | nindent 8 }}
+      {{- with .Values.annotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.service.internalPort }}
+            {{- if .Values.metrics.enabled }}
+            - containerPort: {{ add .Values.service.internalPort 3}}
+              name: metrics
+            {{- end }}
+          env:
+            - name: CF_INSTANCE_INDEX
+              value: "0"
+          {{- range .Values.env }}
+            - name: {{ .name | quote}}
+              value: {{ .value | quote}}
+          {{- end }}
+          {{- if .Values.secretName }}
+          envFrom:
+            - secretRef:
+              name: {{ .Values.secretName }}
+          {{- end }}
+          {{- if .Values.readinessProbe.enabled }}
+          readinessProbe:
+            {{- if eq "httpGet" .Values.readinessProbe.type }}
+            httpGet:
+              path: {{ .Values.readinessProbe.httpGet.path }}
+              port: {{ .Values.readinessProbe.httpGet.port }}
+            {{- else if eq "exec" .Values.readinessProbe.type }}
+            exec:
+              command:
+              {{- range .Values.readinessProbe.exec.command }}
+              - {{ . }}
+              {{- end }}
+            {{- else if eq "tcpSocket" .Values.readinessProbe.type }}
+            tcpSocket:
+              port: {{ .Values.readinessProbe.tcpSocket.port }}
+            {{- end }}
+            initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
+            failureThreshold: {{ .Values.readinessProbe.failureThreshold }}
+            timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
+            successThreshold: {{ .Values.readinessProbe.successThreshold }}
+          {{- end }}
+          {{- if .Values.livenessProbe.enabled }}
+          livenessProbe:
+            {{- if eq "httpGet" .Values.livenessProbe.type }}
+            httpGet:
+              path: {{ .Values.livenessProbe.httpGet.path }}
+              port: {{ .Values.livenessProbe.httpGet.port }}
+            {{- else if eq "exec" .Values.livenessProbe.type }}
+            exec:
+              command:
+              {{- range .Values.livenessProbe.exec.command }}
+              - {{ . }}
+              {{- end }}
+            {{- else if eq "tcpSocket" .Values.livenessProbe.type }}
+            tcpSocket:
+              port: {{ .Values.livenessProbe.tcpSocket.port }}
+            {{- end }}
+            initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+            failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
+            timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
+            successThreshold: {{ .Values.livenessProbe.successThreshold }}
+          {{- end }}
+          {{- if .Values.lifecycle.prestop.enabled }}
+          lifecycle:
+            preStop:
+              exec:
+                command: [{{ .Values.lifecycle.prestop.command }}]
+          {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
