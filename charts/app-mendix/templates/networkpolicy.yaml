@@ -2,15 +2,13 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: {{ .Release.Name }}
+  name: {{ template "app-mendix.fullname" . }}
   labels:
-    app: {{ template "name" . }}
-    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
-    release: {{ .Release.Name }}
+    {{- include "app-mendix.labels" . | nindent 4 }}
 spec:
   podSelector:
     matchLabels:
-      release: {{ .Release.Name }}
+      {{- include "app-mendix.selectorLabels" . | nindent 6 }}
   policyTypes:
   - Ingress
 {{- if .Values.networkPolicy.ingress.allowed }}
@@ -21,4 +19,3 @@ spec:
       port: {{ .Values.service.internalPort }}
 {{- end -}}
 {{- end -}}
-      

@@ -3,71 +3,89 @@
 # equal 1        => 1 leader no slaves
 # larger than 1  => 1 leader, rest slaves
 replicaCount: 1
-configuration:
-  enabled: true
-  envs:
-    # examples
-    - name: SCHEDULED_EVENTS
-      value: ALL
-    - name: MX_Module_Constant
-      value: test
-    - name: MX_App_EnvironmentName
-      value: acceptance
-mendixSystem:
-  # this is valid license for global usage
-  # optional
-  licenseId:
-  # optional
-  licenseKey:
-  database:
-    # required
-    type: PostgreSQL
-    # required
-    host: mendix-postgres:5432
-    # required
-    dbname: mendix
-    # required
-    username: postgres
-    # required
-    password: postgres12!
-  objectstore:
-    # required
-    s3BucketName: test-mx-app
-    # required
-    s3Endpoint: http://11.22.33.44:9000
-    # required
-    s3AccessKeyId: keyid
-    # required
-    s3SecretAccessKey: accesskey
-  # mandatory and must contain: lowercase, uppercase, numbers and special characters
-  # Can be used to login as Admin with username MxAdmin (default in Mendix app)
-  # Empty value here is intentional
-  # required
-  adminPassword: Hello0123!!
+
 metrics:
   # if enabled, metrics are exposed at service.internalPort + 3 e.d. localhost:8083/metrics
   enabled: true
   scrape: true
+
 image:
   repository: "cinaq/hackme"
   tag: "latest"
   pullPolicy: "Always"
 imagePullSecrets:
   - name: dockerconfigjson
-nodeSelector:
-  enabled: true
-  nodetype: app
-resources:
-  limits:
-    cpu: 1
-    memory: 1Gi
-  requests:
-    cpu: 0.5
-    memory: 512Mi
+
+env: []
+  # - name: SCHEDULED_EVENTS
+  #   value: ALL
+  # - name: MX_Module_Constant
+  #   value: test
+  # - name: MX_App_EnvironmentName
+  #   value: acceptance
+  # - name: TZ
+  #   value: Europe/Amsterdam
+  # - name: PORT
+  #   value: 8080
+  # - name: MXRUNTIME_ApplicationRootUrl
+  #   value: "https://mx-app.example.com/"
+  # - name: METRICS_SERVICE_ENABLED
+  #   value: "true"
+  # - name: MXRUNTIME_DatabaseHost
+  #   value: "mendix-postgres:5432"
+  # - name: MXRUNTIME_DatabaseType
+  #   value: "PostgreSQL"
+  # - name: MXRUNTIME_DatabaseName
+  #   value: "mendix"
+  # - name: S3_BUCKET_NAME
+  #   value: "test-mx-app"
+  # - name: S3_ENDPOINT
+  #   value: "http://minio:9000"
+  # - name: LICENSE_ID
+  #   value: xxx
+  # - name: LICENSE_KEY
+  #   value: xxx
+  # - name: ADMIN_PASSWORD
+  #   value: "Hello0123!!"
+  # - name: MXRUNTIME_DatabaseUserName
+  #   value: "postgres"
+  # - name: MXRUNTIME_DatabasePassword
+  #   value: "postgres12!"
+  # - name: S3_ACCESS_KEY_ID
+  #   value: "keyid"
+  # - name: S3_SECRET_ACCESS_KEY
+  #   value: "accesskey"
+
+# Secret name with mendix application runtime variables. Will be loaded as pod environment variables
+#  Example data
+#  data:
+#   ADMIN_PASSWORD: SGVsbG8wMTIzY2xlYXIK (base64)
+secretName: ""
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+resources: {}
+  # limits:
+  #   cpu: 1
+  #   memory: 1Gi
+  # requests:
+  #   cpu: 0.5
+  #   memory: 512Mi
+
+annotations:
+  prometheus.io/scrape: "true"
+  prometheus.io/path: "/metrics"
+  prometheus.io/port: "8080"
+
 service:
   type: ClusterIP
   externalPort: 80
   internalPort: 8080
+
 ingress:
   enabled: true
   domain: paas
@@ -93,12 +111,14 @@ autoscale:
   minSlaveReplicas: 1
   maxSlaveReplicas: 3
   targetCPUUtilizationPercentage: 70
+
 strategy:
   enabled: false
   type: RollingUpdate
   rollingUpdate:
     maxSurge: 1
     maxUnavailable: 0
+
 readinessProbe:
   enabled: true
   type: httpGet
@@ -114,6 +134,7 @@ readinessProbe:
   failureThreshold: 3
   timeoutSeconds: 1
   successThreshold: 1
+
 livenessProbe:
   enabled: true
   type: httpGet
@@ -129,8 +150,8 @@ livenessProbe:
   failureThreshold: 3
   timeoutSeconds: 1
   successThreshold: 1
+
 lifecycle:
   prestop:
     enabled: false
     command: /opt/eap/bin/stop.sh
-timezone: Asia/Seoul
