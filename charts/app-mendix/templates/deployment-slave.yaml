@@ -51,7 +51,7 @@ spec:
           {{- if .Values.secretName }}
           envFrom:
             - secretRef:
-              name: {{ .Values.secretName }}
+                name: {{ .Values.secretName }}
           {{- end }}
           {{- if .Values.readinessProbe.enabled }}
           readinessProbe:
