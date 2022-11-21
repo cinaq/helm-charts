@@ -10,23 +10,21 @@ metadata:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
-  schedule: "@daily"
+  schedule: "{{ .Values.cronJob.schedule }}"
   jobTemplate:
     spec:
       template:
         spec:
           containers:
           - name: kanctl
-            image: ghcr.io/kanisterio/kanister-tools
+            image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
             imagePullPolicy: IfNotPresent
             command:
               - /bin/sh
               - -c
               - |
-                microdnf install -y perl-Digest-SHA tar
-                curl https://raw.githubusercontent.com/kanisterio/kanister/master/scripts/get.sh | bash
                 kanctl create actionset --action backup -A {{ .Values.actionsetName }} --namespace {{ .Release.Namespace }} \
-                  --blueprint {{ .Values.blueprintName }} --profile kanister/default-profile \
+                  --blueprint {{ .Values.blueprintName }} --profile {{ .Values.profileName }} \
                   --objects v1/secrets/{{ .Release.Namespace }}/{{ include "kanister-actionset.secretName" . }} \
                   --options tenant={{ .Values.tenant }},environment={{ .Values.environment }},application={{ .Values.application }}
             resources: {}
