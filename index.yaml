@@ -148,6 +148,16 @@ entries:
   kanister-actionset:
   - apiVersion: v2
     appVersion: 1.16.0
+    created: "2022-11-22T11:49:21.487524011Z"
+    description: A Helm chart for Kubernetes
+    digest: d21cf61b8ced04e7d9cfea0cbfe611d01b31f14e9fe1b193f55863edfe61cf6d
+    name: kanister-actionset
+    type: application
+    urls:
+    - https://github.com/cinaq/helm-charts/releases/download/kanister-actionset-0.1.1/kanister-actionset-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
+    appVersion: 1.16.0
     created: "2022-10-25T11:57:48.580205541Z"
     description: A Helm chart for Kubernetes
     digest: 8de892790d22b2708817e989b531a62fb0686a6f29a3bde9c064f07a7edbaf8e
@@ -260,4 +270,4 @@ entries:
     urls:
     - https://github.com/cinaq/helm-charts/releases/download/loki-stack-2.6.2/loki-stack-2.6.2.tgz
     version: 2.6.2
-generated: "2022-11-20T19:04:38.123699468Z"
+generated: "2022-11-22T11:49:21.487559312Z"
