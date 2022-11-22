@@ -29,4 +29,8 @@ spec:
                   --options tenant={{ .Values.tenant }},environment={{ .Values.environment }},application={{ .Values.application }}
             resources: {}
           restartPolicy: Never
+          {{- if .Values.imagePullSecrets }}
+          imagePullSecrets:
+            {{- toYaml .Values.imagePullSecrets | nindent 12 }}
+          {{- end }}
 {{- end }}

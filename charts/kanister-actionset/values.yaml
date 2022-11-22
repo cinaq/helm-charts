@@ -5,6 +5,7 @@
 image:
   repository: ghcr.io/kanisterio/kanister-tools
   tag: latest
+imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
