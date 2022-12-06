@@ -2,6 +2,9 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
+image:
+  repository: ghcr.io/kanisterio/kanister-tools
+  tag: latest
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
@@ -32,6 +35,7 @@ secret:
 cronJob:
   create: true
   name: ""
+  schedule: "@daily"
   annotations: {}
 
 actionSet:
