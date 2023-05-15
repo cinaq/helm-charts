@@ -17,6 +17,32 @@ actions:
           backupLocation: {{ `"{{ .Phases.pgDump.Output.backupLocation }}"` }}
     phases:
     - func: KubeTask
+      name: minioDump
+      args:
+        image: {{ .Values.blueprint.image.repository }}:{{ .Values.blueprint.image.tag }}
+        namespace: {{ .Release.Namespace }}
+        podOverride:
+          env:
+          - name: AWS_ACCESS_KEY_ID
+            value: {{ `'{{ .Profile.Credential.Secret.Data.aws_access_key_id | toString }}'` }}
+          - name: AWS_SECRET_ACCESS_KEY
+            value: {{ `'{{ .Profile.Credential.Secret.Data.aws_access_key_id | toString }}'` }}
+        command:
+        - bash
+        - -o
+        - errexit
+        - -o
+        - pipefail
+        - -c
+        - |
+          set -o xtrace
+          # Install minio client
+          curl https://dl.min.io/client/mc/release/linux-amd64/mc -o /usr/local/bin
+          chmod +x /usr/local/bin/mc
+          # Create storage files backup
+          mc --help
+
+    - func: KubeTask
       name: pgDump
       objects:
         pgSecret:
