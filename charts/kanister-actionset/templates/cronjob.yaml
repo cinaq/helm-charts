@@ -15,6 +15,7 @@ spec:
     spec:
       template:
         spec:
+          serviceAccountName: {{ .Values.serviceAccountName }}
           containers:
           - name: kanctl
             image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -23,7 +24,9 @@ spec:
               - /bin/sh
               - -c
               - |
-                kanctl create actionset --action backup -A {{ .Values.actionsetName }} --namespace {{ .Release.Namespace }} \
+                microdnf install -y tar
+                curl -s -L https://github.com/kanisterio/kanister/releases/download/{{ .Values.kanisterVersion }}/kanister_{{ .Values.kanisterVersion }}_linux_amd64.tar.gz | tar xvz -C /usr/local/bin/
+                kanctl create actionset --action backup -A {{ .Values.actionsetName }}-$EPOCHSECONDS --namespace {{ .Release.Namespace }} \
                   --blueprint {{ .Values.blueprintName }} --profile {{ .Values.profileName }} \
                   --objects v1/secrets/{{ .Release.Namespace }}/{{ include "kanister-actionset.secretName" . }} \
                   --options tenant={{ .Values.tenant }},environment={{ .Values.environment }},application={{ .Values.application }}
