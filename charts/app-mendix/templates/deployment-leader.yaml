@@ -38,6 +38,14 @@ spec:
           env:
             - name: CF_INSTANCE_INDEX
               value: "0"
+          {{- if .Values.licenseId }}
+            - name: LICENSE_ID
+              value: {{ .Values.licenseId }}
+          {{- end }}
+          {{- if .Values.licenseKey }}
+            - name: LICENSE_KEY
+              value: {{ .Values.licenseKey }}
+          {{- end }}
           {{- range .Values.env }}
             - name: {{ .name | quote}}
               value: {{ .value | quote}}

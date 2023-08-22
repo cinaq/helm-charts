@@ -16,6 +16,10 @@ image:
 imagePullSecrets:
   - name: dockerconfigjson
 
+
+licenseId: ""
+licenseKey: ""
+
 env: []
   # - name: SCHEDULED_EVENTS
   #   value: ALL
@@ -41,10 +45,6 @@ env: []
   #   value: "test-mx-app"
   # - name: S3_ENDPOINT
   #   value: "http://minio:9000"
-  # - name: LICENSE_ID
-  #   value: xxx
-  # - name: LICENSE_KEY
-  #   value: xxx
   # - name: ADMIN_PASSWORD
   #   value: "Hello0123!!"
   # - name: MXRUNTIME_DatabaseUserName
