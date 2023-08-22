@@ -90,9 +90,7 @@ ingress:
   enabled: true
   ingressClassName: nginx
   domain: paas
-  annotations:
-    kubernetes.io/ingress.class: nginx
-    kubernetes.io/tls-acme: "true"
+  annotations: {}
   addHosts: false
   hosts: []
   tls:
