@@ -16,9 +16,8 @@ image:
 imagePullSecrets:
   - name: dockerconfigjson
 
-
-licenseId: ""
-licenseKey: ""
+licenseId:
+licenseKey:
 
 env: []
   # - name: SCHEDULED_EVENTS
