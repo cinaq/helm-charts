@@ -8,8 +8,10 @@ metadata:
 spec:
 {{- if .Values.autoscale.enabled }}
   replicas: {{ .Values.autoscale.minSlaveReplicas }}
+{{- else if (eq (int .Values.replicaCount) 0)}}
+  replicas: 0
 {{- else }}
-  replicas: {{ sub .Values.replicaCount 1.0 }}
+  replicas: {{ (sub (int .Values.replicaCount) 1) }}
 {{- end }}
   selector:
     matchLabels:

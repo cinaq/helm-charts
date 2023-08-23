@@ -6,7 +6,7 @@ metadata:
   labels:
     {{- include "app-mendix.labels" . | nindent 4 }}
 spec:
-{{- if ge .Values.replicaCount 1.0 }}
+{{- if (ge (int .Values.replicaCount) 1) }}
   replicas: 1
 {{- else }}
   replicas: 0
