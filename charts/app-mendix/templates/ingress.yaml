@@ -12,8 +12,9 @@ metadata:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
+  ingressClassName: {{ .Values.ingress.ingressClassName }}
   rules:
-    - host: {{ .Release.Name }}.{{ .Values.ingress.domain }}
+    - host: {{ .Values.ingress.domain }}
       http:
         paths:
           - backend:

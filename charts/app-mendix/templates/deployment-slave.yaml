@@ -8,8 +8,10 @@ metadata:
 spec:
 {{- if .Values.autoscale.enabled }}
   replicas: {{ .Values.autoscale.minSlaveReplicas }}
+{{- else if (eq (int .Values.replicaCount) 0)}}
+  replicas: 0
 {{- else }}
-  replicas: {{ sub .Values.replicaCount 1.0 }}
+  replicas: {{ (sub (int .Values.replicaCount) 1) }}
 {{- end }}
   selector:
     matchLabels:
@@ -38,12 +40,21 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: {{ .Values.service.internalPort }}
-            {{- if .Values.metrics.enabled }}
-            - containerPort: {{ add .Values.service.internalPort 3 }}
-            {{- end }}
+            - containerPort: {{ add (int .Values.service.internalPort) 2 }}
+              name: metrics
           env:
             - name: CF_INSTANCE_INDEX
               value: "1"
+            - name: MXRUNTIME_Metrics_Registries
+              value: '[{"type": "prometheus", "settings": {"step": "5m"}}]'
+          {{- if .Values.licenseId }}
+            - name: LICENSE_ID
+              value: {{ .Values.licenseId }}
+          {{- end }}
+          {{- if .Values.licenseKey }}
+            - name: LICENSE_KEY
+              value: {{ .Values.licenseKey }}
+          {{- end }}
           {{- range .Values.env }}
             - name: {{ .name | quote}}
               value: {{ .value | quote}}

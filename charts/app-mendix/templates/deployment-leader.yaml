@@ -6,7 +6,7 @@ metadata:
   labels:
     {{- include "app-mendix.labels" . | nindent 4 }}
 spec:
-{{- if ge .Values.replicaCount 1.0 }}
+{{- if (ge (int .Values.replicaCount) 1) }}
   replicas: 1
 {{- else }}
   replicas: 0
@@ -31,13 +31,21 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: {{ .Values.service.internalPort }}
-            {{- if .Values.metrics.enabled }}
-            - containerPort: {{ add .Values.service.internalPort 3}}
+            - containerPort: {{ add (int .Values.service.internalPort) 2}}
               name: metrics
-            {{- end }}
           env:
             - name: CF_INSTANCE_INDEX
               value: "0"
+            - name: MXRUNTIME_Metrics_Registries
+              value: '[{"type": "prometheus", "settings": {"step": "5m"}}]'
+          {{- if .Values.licenseId }}
+            - name: LICENSE_ID
+              value: {{ .Values.licenseId }}
+          {{- end }}
+          {{- if .Values.licenseKey }}
+            - name: LICENSE_KEY
+              value: {{ .Values.licenseKey }}
+          {{- end }}
           {{- range .Values.env }}
             - name: {{ .name | quote}}
               value: {{ .value | quote}}
