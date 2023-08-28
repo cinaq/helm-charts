@@ -4,11 +4,6 @@
 # larger than 1  => 1 leader, rest slaves
 replicaCount: 1
 
-metrics:
-  # if enabled, metrics are exposed at service.internalPort + 3 e.d. localhost:8083/metrics
-  enabled: true
-  scrape: true
-
 image:
   repository: "cinaq/hackme"
   tag: "latest"
@@ -32,8 +27,6 @@ env: []
   #   value: 8080
   # - name: MXRUNTIME_ApplicationRootUrl
   #   value: "https://mx-app.example.com/"
-  # - name: METRICS_SERVICE_ENABLED
-  #   value: "true"
   # - name: MXRUNTIME_DatabaseHost
   #   value: "mendix-postgres:5432"
   # - name: MXRUNTIME_DatabaseType
@@ -77,8 +70,8 @@ resources: {}
 
 annotations:
   prometheus.io/scrape: "true"
-  prometheus.io/path: "/metrics"
-  prometheus.io/port: "8080"
+  prometheus.io/path: "/prometheus"
+  prometheus.io/port: "8082"
 
 service:
   type: ClusterIP
