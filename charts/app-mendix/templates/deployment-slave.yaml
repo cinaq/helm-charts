@@ -40,15 +40,20 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: {{ .Values.service.internalPort }}
+              name: app
             {{- if .Values.metrics.enabled }}
             - containerPort: {{ add .Values.service.internalPort 3 }}
               name: metrics
             - containerPort: 9273
               name: metrics_mendix
             {{- end }}
+            - containerPort: {{ add (int .Values.service.internalPort) 2 }}
+              name: metrics
           env:
             - name: CF_INSTANCE_INDEX
               value: "1"
+            - name: MXRUNTIME_Metrics_Registries
+              value: '[{"type": "prometheus", "settings": {"step": "5m"}}]'
           {{- if .Values.licenseId }}
             - name: LICENSE_ID
               value: {{ .Values.licenseId }}
