@@ -70,7 +70,7 @@ resources: {}
 
 annotations:
   prometheus.io/scrape: true
-  prometheus.io/path: "/prometheus"
+  prometheus.io/path: /prometheus
   prometheus.io/port: 8082
 
 service:
