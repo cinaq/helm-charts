@@ -1,8 +1,10 @@
 apiVersion: v2
 name: app-mendix
-version: 2.1.0
+version: 2.2.0
 description: Mendix Application Chart.
 icon: https://cinaq.github.io/helm-charts/icons/mendix-logo.png
 maintainers:
 - email: x@cinaq.com
   name: Xiwen Cheng
+- email: viktor@cinaq.com
+  name: Viktor Berlov

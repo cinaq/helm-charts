@@ -4,7 +4,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ template "app-mendix.fullname" . }}
+  name: {{ .Release.Name }}
   labels:
     {{- include "app-mendix.labels" . | nindent 4 }}
   {{- with .Values.ingress.annotations }}
@@ -12,8 +12,9 @@ metadata:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
+  ingressClassName: {{ .Values.ingress.ingressClassName }}
   rules:
-    - host: {{ .Release.Name }}.{{ .Values.ingress.domain }}
+    - host: {{ .Values.ingress.domain }}
       http:
         paths:
           - backend:

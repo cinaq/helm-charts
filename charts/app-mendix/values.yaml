@@ -4,17 +4,15 @@
 # larger than 1  => 1 leader, rest slaves
 replicaCount: 1
 
-metrics:
-  # if enabled, metrics are exposed at service.internalPort + 3 e.d. localhost:8083/metrics
-  enabled: true
-  scrape: true
-
 image:
   repository: "cinaq/hackme"
   tag: "latest"
   pullPolicy: "Always"
 imagePullSecrets:
   - name: dockerconfigjson
+
+licenseId:
+licenseKey:
 
 env: []
   # - name: SCHEDULED_EVENTS
@@ -29,8 +27,6 @@ env: []
   #   value: 8080
   # - name: MXRUNTIME_ApplicationRootUrl
   #   value: "https://mx-app.example.com/"
-  # - name: METRICS_SERVICE_ENABLED
-  #   value: "true"
   # - name: MXRUNTIME_DatabaseHost
   #   value: "mendix-postgres:5432"
   # - name: MXRUNTIME_DatabaseType
@@ -41,10 +37,6 @@ env: []
   #   value: "test-mx-app"
   # - name: S3_ENDPOINT
   #   value: "http://minio:9000"
-  # - name: LICENSE_ID
-  #   value: xxx
-  # - name: LICENSE_KEY
-  #   value: xxx
   # - name: ADMIN_PASSWORD
   #   value: "Hello0123!!"
   # - name: MXRUNTIME_DatabaseUserName
@@ -76,10 +68,7 @@ resources: {}
   #   cpu: 0.5
   #   memory: 512Mi
 
-annotations:
-  prometheus.io/scrape: "true"
-  prometheus.io/path: "/metrics"
-  prometheus.io/port: "8080"
+annotations: {}
 
 service:
   type: ClusterIP
@@ -88,14 +77,11 @@ service:
 
 ingress:
   enabled: true
+  ingressClassName: nginx
   domain: paas
-  annotations:
-    kubernetes.io/ingress.class: nginx
-    kubernetes.io/tls-acme: "true"
+  annotations: {}
   addHosts: false
-  hosts:
-    - foo.domain.com
-    - bar.domain.com
+  hosts: []
   tls:
     enabled: false
   # Secrets must be manually created in the namespace.
