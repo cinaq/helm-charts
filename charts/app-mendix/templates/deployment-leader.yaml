@@ -33,7 +33,7 @@ spec:
             - containerPort: {{ .Values.service.internalPort }}
               name: app
             {{- if .Values.metrics.enabled }}
-            - containerPort: {{ add (int .Values.service.internalPort) 2}}
+            - containerPort: {{ add (int .Values.service.internalPort) 2 }}
               name: metrics
             - containerPort: 9273
               name: metrics_mendix

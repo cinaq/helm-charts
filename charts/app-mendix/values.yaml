@@ -141,3 +141,6 @@ lifecycle:
   prestop:
     enabled: false
     command: /opt/eap/bin/stop.sh
+
+metrics:
+  enabled: true
