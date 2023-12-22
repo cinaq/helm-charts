@@ -68,10 +68,7 @@ resources: {}
   #   cpu: 0.5
   #   memory: 512Mi
 
-annotations:
-  prometheus.io/scrape: "true"
-  prometheus.io/path: /prometheus
-  prometheus.io/port: "8082"
+annotations: {}
 
 service:
   type: ClusterIP
