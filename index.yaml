@@ -2,6 +2,20 @@ apiVersion: v1
 entries:
   app-mendix:
   - apiVersion: v2
+    created: "2023-12-22T17:20:19.027130092Z"
+    description: Mendix Application Chart.
+    digest: 331cc15f135ca74e253bb08816fe0065d6b25aa6eaea7cf2ed21f579fc04f12e
+    icon: https://cinaq.github.io/helm-charts/icons/mendix-logo.png
+    maintainers:
+    - email: x@cinaq.com
+      name: Xiwen Cheng
+    - email: viktor@cinaq.com
+      name: Viktor Berlov
+    name: app-mendix
+    urls:
+    - https://github.com/cinaq/helm-charts/releases/download/app-mendix-2.2.1/app-mendix-2.2.1.tgz
+    version: 2.2.1
+  - apiVersion: v2
     created: "2023-12-22T15:25:06.158535914Z"
     description: Mendix Application Chart.
     digest: 2a31604c4c1ca5b87de8a8d17c4113f4248af093b229dcaa5f13e1dc1a09629a
@@ -310,4 +324,4 @@ entries:
     urls:
     - https://github.com/cinaq/helm-charts/releases/download/loki-stack-2.6.2/loki-stack-2.6.2.tgz
     version: 2.6.2
-generated: "2023-12-22T15:25:06.36885982Z"
+generated: "2023-12-22T17:20:19.027293547Z"
