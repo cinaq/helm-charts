@@ -32,6 +32,7 @@ spec:
           ports:
             - containerPort: {{ .Values.service.internalPort }}
               name: app
+            {{- if .Values.metrics.enabled }}
             - containerPort: {{ add (int .Values.service.internalPort) 2}}
               name: metrics
             - containerPort: 9273
