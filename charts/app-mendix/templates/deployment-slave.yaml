@@ -45,7 +45,7 @@ spec:
             - containerPort: {{ add (int .Values.service.internalPort) 2 }}
               name: metrics
             - containerPort: 9273
-              name: metrics_mendix
+              name: metrics-mendix
             {{- end }}
           env:
             - name: CF_INSTANCE_INDEX
