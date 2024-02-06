@@ -3,6 +3,16 @@ entries:
   app-generic:
   - apiVersion: v2
     appVersion: 1.16.0
+    created: "2024-02-06T12:31:42.088272379Z"
+    description: A Helm chart for Kubernetes
+    digest: bef1c011a3a1d6d32e08feb90aa547abdf3bb4a0044243d364d8884ac486569a
+    name: app-generic
+    type: application
+    urls:
+    - https://github.com/cinaq/helm-charts/releases/download/app-generic-0.1.1/app-generic-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
+    appVersion: 1.16.0
     created: "2024-02-06T12:19:44.6697478Z"
     description: A Helm chart for Kubernetes
     digest: c79f1c25e7154639a974b025a4a0cf0eef9dd31581cf399138ef7c896dbcdcd0
@@ -377,4 +387,4 @@ entries:
     urls:
     - https://github.com/cinaq/helm-charts/releases/download/loki-stack-2.6.2/loki-stack-2.6.2.tgz
     version: 2.6.2
-generated: "2024-02-06T12:19:44.669833008Z"
+generated: "2024-02-06T12:31:42.088422881Z"
