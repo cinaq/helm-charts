@@ -1,4 +1,4 @@
-{{- if ne .Values.api.secret.PG_SEARCH "true" -}}
+{{- if not .Values.api.secret.PG_SEARCH -}}
 ---
 apiVersion: batch/v1
 kind: Job

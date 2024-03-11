@@ -75,7 +75,7 @@ api:
     POSTGRES_DATABASE: audit
     POSTGRES_USER: audit
     POSTGRES_PASSWORD: postgres
-    PG_SEARCH: "true"
+    PG_SEARCH: true
     BOOTSTRAP_API_TOKEN: dev
     BOOTSTRAP_ENVIRONMENT_ID: dev
     BOOTSTRAP_PROJECT_ID: dev
