@@ -411,4 +411,15 @@ entries:
     urls:
     - https://github.com/cinaq/helm-charts/releases/download/loki-stack-2.6.2/loki-stack-2.6.2.tgz
     version: 2.6.2
-generated: "2024-02-13T11:02:18.987939454Z"
+  retraced:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2024-03-11T14:57:20.21643034Z"
+    description: A Helm chart for Kubernetes
+    digest: 9e5d4632ce7ea76c205eca473d4bdbc396bbc270bc4d16a7c3eb0d502ba279d3
+    name: retraced
+    type: application
+    urls:
+    - https://github.com/cinaq/helm-charts/releases/download/retraced-0.1.0/retraced-0.1.0.tgz
+    version: 0.1.0
+generated: "2024-03-11T14:57:20.216546207Z"
