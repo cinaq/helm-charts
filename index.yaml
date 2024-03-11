@@ -413,6 +413,16 @@ entries:
     version: 2.6.2
   retraced:
   - apiVersion: v2
+    appVersion: 1.8.0
+    created: "2024-03-11T15:41:44.029320274Z"
+    description: A Helm chart for Kubernetes
+    digest: 9346d520c207483a44bb2b3d147dd1d009be87a755d80ff1a319f1afc5e72ded
+    name: retraced
+    type: application
+    urls:
+    - https://github.com/cinaq/helm-charts/releases/download/retraced-0.1.1/retraced-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
     appVersion: 1.16.0
     created: "2024-03-11T14:57:20.21643034Z"
     description: A Helm chart for Kubernetes
@@ -422,4 +432,4 @@ entries:
     urls:
     - https://github.com/cinaq/helm-charts/releases/download/retraced-0.1.0/retraced-0.1.0.tgz
     version: 0.1.0
-generated: "2024-03-11T14:57:20.216546207Z"
+generated: "2024-03-11T15:41:44.029426802Z"
