@@ -1,0 +1,19 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "retraced.fullname" . }}-api
+  labels:
+    {{- include "retraced.labels" . | nindent 4 }}
+    retraceddev: "1"
+    tier: api
+spec:
+  ports:
+  - name: http
+    port: 3000
+    targetPort: 3000
+  selector:
+    app: auditlog
+    retraceddev: "1"
+    tier: api
+  type: ClusterIP

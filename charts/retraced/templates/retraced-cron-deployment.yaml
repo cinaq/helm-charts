@@ -1,0 +1,52 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "retraced.fullname" . }}-cron
+  labels:
+    {{- include "retraced.labels" . | nindent 4 }}
+    retraceddev: "1"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      retraceddev: "1"
+      tier: cron
+  template:
+    metadata:
+      labels:
+        app: auditlog
+        dest: nsq
+        retraceddev: "1"
+        source: cron
+        tier: cron
+    spec:
+      containers:
+      - command:
+        - /bin/sh
+        - -c
+        - /usr/local/bin/retraced-auditlog-cron /crontab 2>&1 | grep ERRO
+        env:
+        - name: NSQD_HOST
+          valueFrom:
+            secretKeyRef:
+              key: NSQD_HOST
+              name: {{ include "retraced.fullname" . }}-api
+        - name: NSQD_HTTP_PORT
+          valueFrom:
+            secretKeyRef:
+              key: NSQD_HTTP_PORT
+              name: {{ include "retraced.fullname" . }}-api
+        - name: RETRACED_DISABLE_GEOSYNC
+          valueFrom:
+            secretKeyRef:
+              key: RETRACED_DISABLE_GEOSYNC
+              name: {{ include "retraced.fullname" . }}-api
+        image: retracedhq/retraced:1.8.0
+        imagePullPolicy: IfNotPresent
+        name: cron
+        resources:
+          limits:
+            cpu: 100m
+          requests:
+            cpu: 10m

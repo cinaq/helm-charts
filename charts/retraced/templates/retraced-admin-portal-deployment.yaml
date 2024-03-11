@@ -1,0 +1,52 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "retraced.fullname" . }}-admin-portal
+  labels:
+    {{- include "retraced.labels" . | nindent 4 }}
+    retraceddev: "1"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      retraceddev: "1"
+      tier: admin-portal
+  template:
+    metadata:
+      labels:
+        app: auditlog
+        retraceddev: "1"
+        tier: admin-portal
+    spec:
+      containers:
+      - envFrom:
+        - secretRef:
+            name: {{ include "retraced.fullname" . }}-admin-portal
+        image: boxyhq/jackson:1.12.0
+        imagePullPolicy: IfNotPresent
+        name: admin-portal
+        ports:
+        - containerPort: 5225
+          name: http
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 5
+          httpGet:
+            path: /api/health
+            port: 5225
+          periodSeconds: 30
+          successThreshold: 2
+          timeoutSeconds: 10
+        resources:
+          limits:
+            cpu: 1000m
+          requests:
+            cpu: 100m
+        startupProbe:
+          failureThreshold: 5
+          httpGet:
+            path: /api/health
+            port: 5225
+          periodSeconds: 10
+          timeoutSeconds: 10

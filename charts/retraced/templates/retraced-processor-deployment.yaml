@@ -1,0 +1,100 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "retraced.fullname" . }}-processor
+  labels:
+    {{- include "retraced.labels" . | nindent 4 }}
+    retraceddev: "1"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      retraceddev: "1"
+      tier: processor
+  template:
+    metadata:
+      labels:
+        app: auditlog
+        retraceddev: "1"
+        tier: processor
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - auditlog
+                - key: tier
+                  operator: In
+                  values:
+                  - processor
+              topologyKey: kubernetes.io/hostname
+            weight: 2
+      containers:
+      - command:
+        - node
+        - --inspect=0.0.0.0
+        - build/src/_processor/index.js
+        env:
+        - name: TMPDIR
+          value: /tmp
+        - name: BUGSNAG_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: PROCESSOR_TOKEN
+              name: {{ include "retraced.fullname" . }}-api
+        - name: PG_SEARCH
+          valueFrom:
+            secretKeyRef:
+              key: PG_SEARCH
+              name: {{ include "retraced.fullname" . }}-api
+        envFrom:
+        - secretRef:
+            name: {{ include "retraced.fullname" . }}-api
+        image: retracedhq/retraced:1.8.0
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          failureThreshold: 5
+          httpGet:
+            path: /livez
+            port: 3000
+          periodSeconds: 60
+        name: processor
+        ports:
+        - containerPort: 3000
+          name: http
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 5
+          httpGet:
+            path: /healthz
+            port: 3000
+          periodSeconds: 30
+          successThreshold: 2
+          timeoutSeconds: 10
+        resources:
+          limits:
+            cpu: 1000m
+          requests:
+            cpu: 100m
+        startupProbe:
+          failureThreshold: 5
+          httpGet:
+            path: /healthz
+            port: 3000
+          periodSeconds: 10
+          timeoutSeconds: 10
+        volumeMounts:
+        - mountPath: /tmp
+          name: tmpdir
+      volumes:
+      - name: {{ include "retraced.fullname" . }}-mmdbdir
+        persistentVolumeClaim:
+          claimName: {{ include "retraced.fullname" . }}-mmdbdir
+      - emptyDir: {}
+        name: tmpdir

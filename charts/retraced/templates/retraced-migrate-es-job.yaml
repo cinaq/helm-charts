@@ -1,0 +1,37 @@
+{{- if ne .Values.api.secret.PG_SEARCH "true" -}}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "retraced.fullname" . }}-migrate-es
+  labels:
+    {{- include "retraced.labels" . | nindent 4 }}
+    retraceddev: "1"
+spec:
+  template:
+    metadata:
+      labels:
+        retraceddev: "1"
+    spec:
+      containers:
+      - command:
+        - node
+        - --inspect=0.0.0.0
+        - build/src/_db/runner-lite.js
+        - es
+        env:
+        - name: BUGSNAG_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: DB_TOKEN
+              name: {{ include "retraced.fullname" . }}-api
+        - name: SCHEMA_PATH
+          value: /app/build/migrations/es
+        envFrom:
+        - secretRef:
+            name: {{ include "retraced.fullname" . }}-api
+        image: retracedhq/retraced:1.8.0
+        name: db
+      restartPolicy: OnFailure
+  ttlSecondsAfterFinished: 0
+{{- end -}}

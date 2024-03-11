@@ -1,0 +1,82 @@
+replicaCount: 1
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: audit.ci.cinaq.com
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+resources: {}
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+adminPortal:
+  secret:
+    BOXYHQ_LICENSE_KEY: ""
+    DB_CLEANUP_LIMIT: ""
+    DB_ENCRYPTION_KEY: ""
+    DB_TTL: ""
+    DB_TYPE: ""
+    DB_URL: postgres://postgres:postgres@audit-postgresql-cluster:5432/postgres
+    JACKSON_API_KEYS: secret
+    RETRACED_ADMIN_ROOT_TOKEN: dev
+    NEXTAUTH_ACL: ""
+    NEXTAUTH_JWT_SIGNING_PRIVATE_KEY: ""
+    NEXTAUTH_SECRET: ""
+    NEXTAUTH_URL: ""
+    SAML_AUDIENCE: ""
+    SMTP_FROM: ""
+    SMTP_HOST: ""
+    SMTP_PASSWORD: ""
+    SMTP_PORT: ""
+    SMTP_USER: ""
+
+api:
+  secret:
+    ADMIN_ROOT_TOKEN: dev
+    POSTGRES_HOST: audit-postgresql-cluster
+    POSTGRES_DATABASE: audit
+    POSTGRES_USER: audit
+    POSTGRES_PASSWORD: postgres
+    PG_SEARCH: "true"
+    BOOTSTRAP_API_TOKEN: dev
+    BOOTSTRAP_ENVIRONMENT_ID: dev
+    BOOTSTRAP_PROJECT_ID: dev
+    BOOTSTRAP_PROJECT_NAME: dev
