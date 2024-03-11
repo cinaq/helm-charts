@@ -1,0 +1,95 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "retraced.fullname" . }}-api
+  labels:
+    {{- include "retraced.labels" . | nindent 4 }}
+    retraceddev: "1"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      retraceddev: "1"
+      tier: api
+  template:
+    metadata:
+      labels:
+        app: auditlog
+        retraceddev: "1"
+        tier: api
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - auditlog
+                - key: tier
+                  operator: In
+                  values:
+                  - api
+              topologyKey: kubernetes.io/hostname
+            weight: 1
+      containers:
+      - command:
+        - node
+        - --inspect=0.0.0.0
+        - build/src/index.js
+        env:
+        - name: BUGSNAG_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: API_TOKEN
+              name: {{ include "retraced.fullname" . }}-api
+        - name: EXPORT_PAGE_SIZE_INTERNAL
+          value: "2"
+        envFrom:
+        - secretRef:
+            name: {{ include "retraced.fullname" . }}-api
+        image: retracedhq/retraced:1.8.0
+        imagePullPolicy: IfNotPresent
+        name: api
+        ports:
+        - containerPort: 3000
+          name: http
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 5
+          httpGet:
+            path: /healthz
+            port: 3000
+          periodSeconds: 30
+          successThreshold: 2
+          timeoutSeconds: 10
+        resources:
+          limits:
+            cpu: 1000m
+          requests:
+            cpu: 100m
+        startupProbe:
+          failureThreshold: 5
+          httpGet:
+            path: /healthz
+            port: 3000
+          periodSeconds: 10
+          timeoutSeconds: 10
+      initContainers:
+      - args:
+        - -c
+        - ./build/src/retracedctl bootstrap --projectName   "$BOOTSTRAP_PROJECT_NAME"
+          --projectId     "$BOOTSTRAP_PROJECT_ID" --environmentId "$BOOTSTRAP_ENVIRONMENT_ID"
+          --apiKey        "$BOOTSTRAP_API_TOKEN"
+        command:
+        - /bin/sh
+        envFrom:
+        - secretRef:
+            name: {{ include "retraced.fullname" . }}-api
+        - secretRef:
+            name: {{ include "retraced.fullname" . }}-bootstrap
+        image: retracedhq/retraced:1.8.0
+        name: bootstrap

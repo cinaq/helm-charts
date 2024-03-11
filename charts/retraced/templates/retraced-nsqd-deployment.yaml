@@ -1,0 +1,48 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "retraced.fullname" . }}-nsqd
+  labels:
+    {{- include "retraced.labels" . | nindent 4 }}
+    retraceddev: "1"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      retraceddev: "1"
+      tier: nsq
+  template:
+    metadata:
+      labels:
+        app: auditlog
+        retraceddev: "1"
+        tier: nsq
+    spec:
+      containers:
+      - args:
+        - -c
+        - nsqd -statsd-address ${STATSD_HOST}:${STATSD_PORT} -statsd-prefix "nsqd."
+        command:
+        - /bin/sh
+        env:
+        - name: STATSD_HOST
+          valueFrom:
+            secretKeyRef:
+              key: STATSD_HOST
+              name: {{ include "retraced.fullname" . }}-api
+        - name: STATSD_PORT
+          valueFrom:
+            secretKeyRef:
+              key: STATSD_PORT
+              name: {{ include "retraced.fullname" . }}-api
+        image: nsqio/nsq:v1.2.1
+        name: nsqd
+        ports:
+        - containerPort: 4150
+        - containerPort: 4151
+        resources:
+          limits:
+            cpu: 1000m
+          requests:
+            cpu: 100m

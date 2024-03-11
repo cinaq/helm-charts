@@ -1,0 +1,33 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "retraced.fullname" . }}-dbutil
+  labels:
+    {{- include "retraced.labels" . | nindent 4 }}
+    app: retraced
+    retraceddev: "1"
+    tier: dbutil
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: retraced
+      retraceddev: "1"
+      tier: dbutil
+  template:
+    metadata:
+      labels:
+        app: retraced
+        retraceddev: "1"
+        tier: dbutil
+    spec:
+      containers:
+      - command:
+        - /bin/sleep
+        - infinity
+        envFrom:
+        - secretRef:
+            name: {{ include "retraced.fullname" . }}-api
+        image: retracedhq/retraced:1.8.0
+        name: dbutil

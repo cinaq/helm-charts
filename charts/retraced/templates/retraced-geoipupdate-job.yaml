@@ -1,0 +1,77 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "retraced.fullname" . }}-geoipupdate
+  labels:
+    {{- include "retraced.labels" . | nindent 4 }}
+    retraceddev: "1"
+spec:
+  template:
+    metadata:
+      labels:
+        retraceddev: "1"
+    spec:
+      containers:
+      - args:
+        - |
+          if [ -z "$GEOIPUPDATE_USE_MMDB" ]; then
+            echo "Skipping the job..."
+          else
+            echo "Running the job..."
+            source /usr/bin/entry.sh
+          fi
+        command:
+        - /bin/sh
+        - -c
+        env:
+        - name: GEOIPUPDATE_EDITION_IDS
+          valueFrom:
+            secretKeyRef:
+              key: GEOIPUPDATE_EDITION_IDS
+              name: {{ include "retraced.fullname" . }}-api
+        - name: GEOIPUPDATE_FREQUENCY
+          valueFrom:
+            secretKeyRef:
+              key: GEOIPUPDATE_FREQUENCY
+              name: {{ include "retraced.fullname" . }}-api
+        - name: GEOIPUPDATE_USE_MMDB
+          valueFrom:
+            secretKeyRef:
+              key: GEOIPUPDATE_USE_MMDB
+              name: {{ include "retraced.fullname" . }}-api
+        - name: GEOIPUPDATE_VERBOSE
+          valueFrom:
+            secretKeyRef:
+              key: GEOIPUPDATE_VERBOSE
+              name: {{ include "retraced.fullname" . }}-api
+        - name: GEOIPUPDATE_ACCOUNT_ID
+          valueFrom:
+            secretKeyRef:
+              key: GEOIPUPDATE_ACCOUNT_ID
+              name: {{ include "retraced.fullname" . }}-api
+        - name: GEOIPUPDATE_LICENSE_KEY
+          valueFrom:
+            secretKeyRef:
+              key: GEOIPUPDATE_LICENSE_KEY
+              name: {{ include "retraced.fullname" . }}-api
+        - name: GEOIPUPDATE_DB_DIR
+          valueFrom:
+            secretKeyRef:
+              key: GEOIPUPDATE_DB_DIR
+              name: {{ include "retraced.fullname" . }}-api
+        envFrom:
+        - secretRef:
+            name: {{ include "retraced.fullname" . }}-api
+        image: maxmindinc/geoipupdate:v5.1
+        imagePullPolicy: IfNotPresent
+        name: geoipupdate
+        volumeMounts:
+        - mountPath: /etc/mmdb
+          name: {{ include "retraced.fullname" . }}-mmdbdir
+      restartPolicy: OnFailure
+      volumes:
+      - name: {{ include "retraced.fullname" . }}-mmdbdir
+        persistentVolumeClaim:
+          claimName: {{ include "retraced.fullname" . }}-mmdbdir
+  ttlSecondsAfterFinished: 0
