@@ -57,7 +57,7 @@ spec:
             - name: RUNTIME_LOGIN_METRICS_ENABLED
               value: {{ .Values.metrics.runtimeLoginMetricsEnabled | quote }}
             - name: TRENDS_FORWARDER_URL
-              value: {{ .Values.metrics.trendsForwarderUrl }}
+              value: {{ .Values.metrics.trendsForwarderUrl | quote }}
           {{- if .Values.licenseId }}
             - name: LICENSE_ID
               value: {{ .Values.licenseId }}
