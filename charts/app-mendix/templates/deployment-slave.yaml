@@ -48,10 +48,16 @@ spec:
               name: metrics-mendix
             {{- end }}
           env:
+            - name: NON_MENDIX_PUBLIC_CLOUD
+              value: "true"
             - name: CF_INSTANCE_INDEX
               value: "1"
             - name: MXRUNTIME_Metrics_Registries
               value: '[{"type": "prometheus", "settings": {"step": "5m"}}]'
+            - name: RUNTIME_LOGIN_METRICS_ENABLED
+              value: {{ .Values.metrics.runtimeLoginMetricsEnabled | quote }}
+            - name: TRENDS_FORWARDER_URL
+              value: {{ .Values.metrics.trendsForwarderUrl | quote }}
           {{- if .Values.licenseId }}
             - name: LICENSE_ID
               value: {{ .Values.licenseId }}

@@ -144,3 +144,6 @@ lifecycle:
 
 metrics:
   enabled: true
+  runtimeLoginMetricsEnabled: true
+  # example: http://loki-stack:3100/loki/api/v1/push
+  trendsForwarderUrl: ""
