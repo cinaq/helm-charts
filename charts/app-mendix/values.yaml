@@ -87,6 +87,13 @@ networkPolicy:
   enabled: true
   ingress:
     allowed: true
+autoscale:
+  # only affects slave deployment
+  # If enabled, slave replicas starts with minSlaveReplicas
+  enabled: true
+  minSlaveReplicas: 1
+  maxSlaveReplicas: 3
+  targetCPUUtilizationPercentage: 70
 
 readinessProbe:
   enabled: true
