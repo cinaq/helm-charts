@@ -90,7 +90,7 @@ networkPolicy:
 autoscale:
   # only affects slave deployment
   # If enabled, slave replicas starts with minSlaveReplicas
-  enabled: true
+  enabled: false
   minSlaveReplicas: 1
   maxSlaveReplicas: 3
   targetCPUUtilizationPercentage: 70
