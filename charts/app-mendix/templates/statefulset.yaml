@@ -2,17 +2,17 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ template "app-mendix.fullname" . }}-statefulset
+  name: {{ template "app-mendix.fullname" . }}
   labels:
     {{- include "app-mendix.labels" . | nindent 4 }}
 spec:
-  replicas: {{ default 2 .Values.replicaCount }}
+  replicas: {{ default 1 .Values.replicaCount }}
   selector:
     matchLabels:
       {{- include "app-mendix.selectorLabels" . | nindent 6 }}
   updateStrategy:
     type: RollingUpdate
-  serviceName: {{ template "app-mendix.fullname" . }}-statefulset
+  serviceName: {{ template "app-mendix.fullname" . }}
   minReadySeconds: 10 
   template:
     metadata:
@@ -39,8 +39,6 @@ spec:
           env:
             - name: NON_MENDIX_PUBLIC_CLOUD
               value: "true"
-            - name: CF_INSTANCE_INDEX
-              value: "0"
             - name: MXRUNTIME_Metrics_Registries
               value: '[{"type": "prometheus", "settings": {"step": "5m"}}]'
             - name: RUNTIME_LOGIN_METRICS_ENABLED
@@ -116,3 +114,19 @@ spec:
           {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

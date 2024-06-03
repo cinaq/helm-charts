@@ -1,5 +1,5 @@
 # replicaCount: 2 | 1 leader, 1 slave
-replicaCount: 2
+replicaCount: 1
 
 image:
   repository: "cinaq/hackme"
