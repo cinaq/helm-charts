@@ -1,21 +1,19 @@
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
-  name: {{ template "app-mendix.fullname" . }}-leader
+  name: {{ template "app-mendix.fullname" . }}-statefulset
   labels:
     {{- include "app-mendix.labels" . | nindent 4 }}
 spec:
-{{- if (ge (int .Values.replicaCount) 1) }}
-  replicas: 1
-{{- else }}
-  replicas: 0
-{{- end }}
+  replicas: {{ default 2 .Values.replicaCount }}
   selector:
     matchLabels:
       {{- include "app-mendix.selectorLabels" . | nindent 6 }}
-  strategy:
-    type: Recreate
+  updateStrategy:
+    type: RollingUpdate
+  serviceName: {{ template "app-mendix.fullname" . }}-statefulset
+  minReadySeconds: 10 
   template:
     metadata:
       labels:
@@ -118,19 +116,3 @@ spec:
           {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-      {{- with .Values.imagePullSecrets }}
-      imagePullSecrets:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.nodeSelector }}
-      nodeSelector:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.affinity }}
-      affinity:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.tolerations }}
-      tolerations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}

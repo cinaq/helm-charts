@@ -1,8 +1,5 @@
-# initial replica, if:
-# less than 1    => no leader or slaves
-# equal 1        => 1 leader no slaves
-# larger than 1  => 1 leader, rest slaves
-replicaCount: 1
+# replicaCount: 2 | 1 leader, 1 slave
+replicaCount: 2
 
 image:
   repository: "cinaq/hackme"
@@ -90,20 +87,6 @@ networkPolicy:
   enabled: true
   ingress:
     allowed: true
-autoscale:
-  # only affects slave deployment
-  # If enabled, slave replicas starts with minSlaveReplicas
-  enabled: false
-  minSlaveReplicas: 1
-  maxSlaveReplicas: 3
-  targetCPUUtilizationPercentage: 70
-
-strategy:
-  enabled: false
-  type: RollingUpdate
-  rollingUpdate:
-    maxSurge: 1
-    maxUnavailable: 0
 
 readinessProbe:
   enabled: true
