@@ -1,7 +1,4 @@
-# initial replica, if:
-# less than 1    => no leader or slaves
-# equal 1        => 1 leader no slaves
-# larger than 1  => 1 leader, rest slaves
+# replicaCount: 2 | 1 leader, 1 slave
 replicaCount: 1
 
 image:
@@ -97,13 +94,6 @@ autoscale:
   minSlaveReplicas: 1
   maxSlaveReplicas: 3
   targetCPUUtilizationPercentage: 70
-
-strategy:
-  enabled: false
-  type: RollingUpdate
-  rollingUpdate:
-    maxSurge: 1
-    maxUnavailable: 0
 
 readinessProbe:
   enabled: true
