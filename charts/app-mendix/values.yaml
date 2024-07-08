@@ -137,3 +137,10 @@ metrics:
   runtimeLoginMetricsEnabled: true
   # example: http://loki-stack:3100/loki/api/v1/push
   trendsForwarderUrl: ""
+
+nfsVolume:
+  enabled: false
+  name: mendix-nfs
+  server: 172.19.0.6
+  path: /mnt/mendixdata
+  storage: 10Gi
