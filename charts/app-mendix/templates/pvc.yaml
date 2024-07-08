@@ -1,0 +1,16 @@
+{{ if .Values.nfsVolume.enabled }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ template "app-mendix.fullname" . }}
+  labels:
+    {{- include "app-mendix.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: {{ .Values.nfsVolume.storage }}
+  storageClassName: ""
+{{ end }}

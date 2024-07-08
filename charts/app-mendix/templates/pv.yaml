@@ -1,0 +1,17 @@
+{{ if .Values.nfsVolume.enabled }}
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ template "app-mendix.fullname" . }}
+  labels:
+    {{- include "app-mendix.labels" . | nindent 4 }}
+spec:
+  capacity:
+    storage: {{ .Values.nfsVolume.storage }}
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    server: {{ .Values.nfsVolume.server }}
+    path: {{ .Values.nfsVolume.path }}
+{{ end }}

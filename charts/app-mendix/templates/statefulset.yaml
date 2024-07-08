@@ -114,6 +114,17 @@ spec:
           {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+          {{- if .Values.nfsVolume.enabled }}
+          volumeMounts:
+            - name: {{ .Values.nfsVolume.name }}
+              mountPath: /opt/mendix/build/data/files/
+          {{- end }}
+      {{- if .Values.nfsVolume.enabled }}
+      volumes:
+        - name: {{ .Values.nfsVolume.name }}
+          persistentVolumeClaim:
+            claimName: {{ template "app-mendix.fullname" . }}
+      {{- end }}
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
