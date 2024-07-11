@@ -1,0 +1,26 @@
+{{- if .Values.route.enabled }}
+{{- $serviceName := include "app-mendix.fullname" . -}}
+{{- $servicePort := .Values.service.externalPort -}}
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    {{- include "app-mendix.labels" . | nindent 4 }}
+  {{- with .Values.route.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  host: {{ .Values.route.host }}
+  port:
+    targetPort: {{ $servicePort }}
+  to:
+    kind: Service
+    name: {{ $serviceName }}
+  {{- if .Values.route.tls.enabled }}
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+  {{- end }}  
+{{- end }}

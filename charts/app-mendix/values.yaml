@@ -75,7 +75,7 @@ service:
 ingress:
   enabled: true
   ingressClassName: nginx
-  domain: paas
+  domain: app.example.com
   annotations: {}
   addHosts: false
   hosts: []
@@ -83,13 +83,20 @@ ingress:
     enabled: false
   # Secrets must be manually created in the namespace.
     secretName: secret-tls
+
+# Enable to create openshift route
+route:
+  enabled: false
+  host: app.example.com
+  annotations: {}
+  tls:
+    enabled: false
+
 networkPolicy:
   enabled: true
   ingress:
     allowed: true
 autoscale:
-  # only affects slave deployment
-  # If enabled, slave replicas starts with minSlaveReplicas
   enabled: false
   minSlaveReplicas: 1
   maxSlaveReplicas: 3
@@ -141,6 +148,6 @@ metrics:
 nfsVolume:
   enabled: false
   name: mendix-nfs
-  server: 172.19.0.6
+  server: nfs.example.com
   path: /mnt/mendixdata
   storage: 10Gi
