@@ -1,5 +1,4 @@
 {{ if .Values.nfsVolume.enabled }}
----
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
