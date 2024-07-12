@@ -1,4 +1,4 @@
-{{ if .Values.nfsVolume.enabled }}
+{{ if .Values.persistence.nfsVolume.enabled }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -10,6 +10,6 @@ spec:
     - ReadWriteMany
   resources:
     requests:
-      storage: {{ .Values.nfsVolume.storage }}
+      storage: {{ .Values.persistence.nfsVolume.storage }}
   storageClassName: ""
 {{ end }}

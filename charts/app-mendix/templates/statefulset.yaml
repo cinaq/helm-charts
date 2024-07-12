@@ -114,16 +114,33 @@ spec:
           {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-          {{- if .Values.nfsVolume.enabled }}
+          {{- if .Values.persistence.enabled }}
           volumeMounts:
-            - name: {{ .Values.nfsVolume.name }}
-              mountPath: /opt/mendix/build/data/files/
+            - name: empty-dir
+              mountPath: /tmp
+          {{- with .Values.persistence.extraVolumeMounts }}
+            {{- toYaml . | nindent 12 }}
           {{- end }}
-      {{- if .Values.nfsVolume.enabled }}
+          {{- if .Values.persistence.nfsVolume.enabled }}
+            - name: {{ .Values.persistence.nfsVolume.name }}
+              mountPath: /opt/mendix/build/data/files/
+              {{- if .Values.persistence.nfsVolume.subPath }}
+              subPath: {{ .Values.persistence.nfsVolume.subPath }}
+              {{- end }}
+          {{- end }}
+          {{- end }}
+      {{- if .Values.persistence.enabled }}
       volumes:
-        - name: {{ .Values.nfsVolume.name }}
+        - name: empty-dir
+          emptyDir: {}
+      {{- with .Values.persistence.extraVolumes }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.persistence.nfsVolume.enabled }}
+        - name: {{ .Values.persistence.nfsVolume.name }}
           persistentVolumeClaim:
             claimName: {{ template "app-mendix.fullname" . }}
+      {{- end }}
       {{- end }}
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
