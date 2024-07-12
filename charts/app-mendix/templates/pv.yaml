@@ -1,4 +1,4 @@
-{{ if .Values.nfsVolume.enabled }}
+{{ if .Values.persistence.nfsVolume.enabled }}
 apiVersion: v1
 kind: PersistentVolume
 metadata:
@@ -7,10 +7,10 @@ metadata:
     {{- include "app-mendix.labels" . | nindent 4 }}
 spec:
   capacity:
-    storage: {{ .Values.nfsVolume.storage }}
+    storage: {{ .Values.persistence.nfsVolume.storage }}
   accessModes:
     - ReadWriteMany
   nfs:
-    server: {{ .Values.nfsVolume.server }}
-    path: {{ .Values.nfsVolume.path }}
+    server: {{ .Values.persistence.nfsVolume.server }}
+    path: {{ .Values.persistence.nfsVolume.path }}
 {{ end }}

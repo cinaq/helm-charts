@@ -145,9 +145,24 @@ metrics:
   # example: http://loki-stack:3100/loki/api/v1/push
   trendsForwarderUrl: ""
 
-nfsVolume:
+persistence:
   enabled: false
-  name: mendix-nfs
-  server: nfs.example.com
-  path: /mnt/mendixdata
-  storage: 10Gi
+
+  # if enabled, a pv, pvc resources will be created and mounted to statefulset
+  nfsVolume:
+    enabled: false
+    name: mendix-nfs
+    server: nfs.example.com
+    path: /mnt/mendixdata
+    storage: 10Gi
+    subPath: "/app"
+
+  extraVolumes: []
+    # - name: extra-volume
+    #   persistentVolumeClaim:
+    #     claimName: precreated-pvc
+
+  extraVolumeMounts: []
+    # - name: extra-volume
+    #   mountPath: /path/to/mount
+    #   subPath: "/app"
