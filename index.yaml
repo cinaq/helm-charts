@@ -33,6 +33,20 @@ entries:
     version: 0.1.0
   app-mendix:
   - apiVersion: v2
+    created: "2024-07-15T13:57:37.934166857Z"
+    description: Mendix Application Chart.
+    digest: c4d44a4f44eb09aa79f9abc002a07f109d1a2f0d2ae6d20ef866d8e31d7f83b4
+    icon: https://cinaq.github.io/helm-charts/icons/mendix-logo.png
+    maintainers:
+    - email: x@cinaq.com
+      name: Xiwen Cheng
+    - email: viktor@cinaq.com
+      name: Viktor Berlov
+    name: app-mendix
+    urls:
+    - https://github.com/cinaq/helm-charts/releases/download/app-mendix-3.0.4/app-mendix-3.0.4.tgz
+    version: 3.0.4
+  - apiVersion: v2
     created: "2024-07-12T11:57:52.097692732Z"
     description: Mendix Application Chart.
     digest: 10dc808a369ebd2ffe05c8f42fb2be8b32e3f4a5ff6a55de6d309d1ab4269776
@@ -512,4 +526,4 @@ entries:
     urls:
     - https://github.com/cinaq/helm-charts/releases/download/retraced-0.1.0/retraced-0.1.0.tgz
     version: 0.1.0
-generated: "2024-07-12T11:57:52.097933461Z"
+generated: "2024-07-15T13:57:37.934398832Z"
