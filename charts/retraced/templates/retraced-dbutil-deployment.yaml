@@ -9,7 +9,7 @@ metadata:
     retraceddev: "1"
     tier: dbutil
 spec:
-  replicas: 1
+  replicas: {{ .Values.dbutil.replicaCount }}
   selector:
     matchLabels:
       app: retraced
@@ -31,3 +31,5 @@ spec:
             name: {{ include "retraced.fullname" . }}-api
         image: retracedhq/retraced:1.8.0
         name: dbutil
+        resources:
+          {{- toYaml .Values.dbutil.resources | nindent 12 }}

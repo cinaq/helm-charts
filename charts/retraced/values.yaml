@@ -1,5 +1,3 @@
-replicaCount: 1
-
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
@@ -48,6 +46,8 @@ tolerations: []
 affinity: {}
 
 adminPortal:
+  replicaCount: 1
+  resources: {}
   secret:
     BOXYHQ_LICENSE_KEY: ""
     DB_CLEANUP_LIMIT: ""
@@ -71,6 +71,8 @@ adminPortal:
     SMTP_USER: ""
 
 api:
+  replicaCount: 1
+  resources: {}
   secret:
     ADMIN_ROOT_TOKEN: dev
     POSTGRES_HOST: audit-postgresql-cluster
@@ -82,3 +84,15 @@ api:
     BOOTSTRAP_ENVIRONMENT_ID: dev
     BOOTSTRAP_PROJECT_ID: dev
     BOOTSTRAP_PROJECT_NAME: dev
+
+cron:
+  replicaCount: 1
+  resources: {}
+
+dbutil:
+  replicaCount: 1
+  resources: {}
+
+nsqd:
+  replicaCount: 1
+  resources: {}
