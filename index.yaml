@@ -402,6 +402,23 @@ entries:
     urls:
     - https://github.com/cinaq/helm-charts/releases/download/kanister-blueprint-0.1.0/kanister-blueprint-0.1.0.tgz
     version: 0.1.0
+  kanister-profile:
+  - apiVersion: v1
+    appVersion: 0.1.0
+    created: "2024-12-06T17:47:08.233918827Z"
+    description: A helm chart to create profile custom resource for kanister
+    digest: 26bd6c9665187bb3c5fdb19a0530aeb4a96f4db41512e1ccc57b656eab2509c1
+    home: https://kanister.io/
+    icon: https://kasten.io/assets/img/kanister-logo.png
+    maintainers:
+    - email: tom@kasten.io
+      name: tdmanv
+    - email: ilya@kasten.io
+      name: depohmel
+    name: kanister-profile
+    urls:
+    - https://github.com/cinaq/helm-charts/releases/download/kanister-profile-0.112.0/kanister-profile-0.112.0.tgz
+    version: 0.112.0
   loki-stack:
   - apiVersion: v1
     appVersion: v2.1.0
@@ -536,4 +553,4 @@ entries:
     urls:
     - https://github.com/cinaq/helm-charts/releases/download/retraced-0.1.0/retraced-0.1.0.tgz
     version: 0.1.0
-generated: "2024-07-15T14:50:10.016123175Z"
+generated: "2024-12-06T17:47:08.234088283Z"
