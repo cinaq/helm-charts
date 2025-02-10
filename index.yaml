@@ -512,6 +512,17 @@ entries:
     urls:
     - https://github.com/cinaq/helm-charts/releases/download/loki-stack-2.6.2/loki-stack-2.6.2.tgz
     version: 2.6.2
+  lowops:
+  - apiVersion: v2
+    appVersion: 4.0.0
+    created: "2025-02-10T21:03:39.61802399Z"
+    description: A Helm chart for Low Ops Platfrom deployment
+    digest: d6da680694b65bac5176e1af6b8a70d21cf547f7da2ee5a7f3a972d165921b10
+    name: lowops
+    type: application
+    urls:
+    - https://github.com/cinaq/helm-charts/releases/download/lowops-0.1.0/lowops-0.1.0.tgz
+    version: 0.1.0
   retraced:
   - apiVersion: v2
     appVersion: 1.8.0
@@ -553,4 +564,4 @@ entries:
     urls:
     - https://github.com/cinaq/helm-charts/releases/download/retraced-0.1.0/retraced-0.1.0.tgz
     version: 0.1.0
-generated: "2024-12-06T17:47:08.234088283Z"
+generated: "2025-02-10T21:03:39.618192317Z"
