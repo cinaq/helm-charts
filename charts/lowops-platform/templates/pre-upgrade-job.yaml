@@ -1,0 +1,62 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  annotations:
+    helm.sh/hook: pre-upgrade
+    helm.sh/hook-upgrade-policy: hook-succeeded
+  {{- with .Values.lowops.podAnnotations }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  labels:
+    {{- include "lowops.labels" . | nindent 4 }}
+  name: {{ include "lowops.fullname" . }}-pre-upgrade
+spec:
+  template:
+    metadata:
+      labels:
+        {{- include "lowops.labels" . | nindent 8 }}
+      name: {{ include "lowops.fullname" . }}
+    spec:
+      containers:
+      - env:
+        - name: ROLES
+          value: "platform-upgrade"
+        - name: LOW_OPS_ENV
+          value: {{ .Values.lowops.jobEnv.environment }}
+        - name: CONTAINER_IMAGE
+          value: {{ .Values.lowops.image.containerImage }}
+        - name: BASE_DOMAIN
+          value: {{ .Values.lowops.jobEnv.baseDomain }}
+        - name: PRE_UPGRADE_HOOK
+          value: "true"
+        volumeMounts:
+          - name: values-secret
+            mountPath: /secret
+        image: {{ .Values.lowops.image.containerImage }}
+        imagePullPolicy: {{ .Values.lowops.image.pullPolicy }}
+        name: ansible
+        resources:
+          {{- toYaml .Values.lowops.resources | nindent 10 }}
+      volumes:
+        - name: values-secret
+          secret:
+            secretName: {{ include "lowops.fullname" . }}-values
+      {{- if .Values.lowops.imagePullSecrets }}
+      imagePullSecrets: {{ toYaml .Values.lowops.imagePullSecrets | nindent 6 }}
+      {{- end }}
+      serviceAccount: {{ include "lowops.fullname" . }}-sa
+      serviceAccountName: {{ include "lowops.fullname" . }}-sa
+      terminationGracePeriodSeconds: 30
+      restartPolicy: {{ .Values.lowops.restartPolicy }}
+      {{- with .Values.lowops.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.lowops.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.lowops.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

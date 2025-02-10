@@ -1,0 +1,5 @@
+Lowops Platfrom bootstrap started
+
+To Check the progress:
+
+kubectl logs -n {{ .Release.Namespace }} --timestamps=true job/{{ .Release.Name }} -f
