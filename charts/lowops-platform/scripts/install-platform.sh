@@ -3,12 +3,9 @@
 set -e -o pipefail
 
 export GENERAL_CLIENT_NAME="${GENERAL_CLIENT_NAME:-client}"
-export BASE_DOMAIN="${BASE_DOMAIN:-lowops.cinaq.com}"
 export EMAIL_DOMAIN="${EMAIL_DOMAIN:-cinaq.com}"
 export PLATFORM_VERSION="${PLATFORM_VERSION:-v4.0.0-alpha21}"
 export CONTAINER_IMAGE="${CONTAINER_IMAGE:-docker.io/cinaq/low-ops-ansible-roles:0-ci-v4-0-0-alpha21}"
-export PLATFORM_PRIVATE_REGISTRY_USER="${PLATFORM_PRIVATE_REGISTRY_USER:-user}"
-export PLATFORM_PRIVATE_REGISTRY_TOKEN="${PLATFORM_PRIVATE_REGISTRY_TOKEN:-token}"
 export CHART_VERSION="${CHART_VERSION:-0.1.12}"
 export KIND_CLUSTER_VERSION="${KIND_CLUSTER_VERSION:-v1.30.8}"
 
@@ -306,7 +303,71 @@ function install_platform() {
     eval "$HELM_CMD"
 }
 
+function validate_domain() {
+    # Prompt for BASE_DOMAIN if not set
+    if [ -z "${BASE_DOMAIN}" ]; then
+        read -r -p "Please enter your base domain (e.g., example.com): " BASE_DOMAIN
+        export BASE_DOMAIN
+    fi
+
+    echo ">>> Validating domain ${BASE_DOMAIN}"
+    
+    # Try to resolve the domain
+    if ! host "${BASE_DOMAIN}" > /dev/null 2>&1; then
+        echo "Error: Unable to resolve ${BASE_DOMAIN}. Please ensure the domain exists and is properly configured."
+        exit 1
+    fi
+
+    # Get the IP address
+    IP=$(host "${BASE_DOMAIN}" | awk '/has address/ { print $4 }' | head -n1)
+    
+    # Check if the IP is private
+    if [[ $IP =~ ^(127\.|10\.|172\.1[6-9]\.|172\.2[0-9]\.|172\.3[0-1]\.|192\.168\.) ]]; then
+        echo "Error: ${BASE_DOMAIN} resolves to a private IP address ($IP)."
+        echo "Please ensure the domain resolves to a public IP address."
+        exit 1
+    fi
+
+    echo "Domain ${BASE_DOMAIN} successfully validated and resolves to public IP: ${IP}"
+}
+
+function validate_credentials() {
+    # Prompt for PLATFORM_PRIVATE_REGISTRY_USER if not set
+    if [ -z "${PLATFORM_PRIVATE_REGISTRY_USER}" ]; then
+        read -r -p "Please enter your platform registry username: " PLATFORM_PRIVATE_REGISTRY_USER
+        export PLATFORM_PRIVATE_REGISTRY_USER
+    fi
+
+    # Prompt for PLATFORM_PRIVATE_REGISTRY_TOKEN if not set
+    if [ -z "${PLATFORM_PRIVATE_REGISTRY_TOKEN}" ]; then
+        read -r -s -p "Please enter your platform registry token: " PLATFORM_PRIVATE_REGISTRY_TOKEN
+        echo  # Add a newline after the hidden input
+        export PLATFORM_PRIVATE_REGISTRY_TOKEN
+    fi
+
+    echo "Registry credentials validated"
+}
+
+function validate_sudo() {
+    echo ">>> Validating sudo access"
+    if ! sudo -v &> /dev/null; then
+        echo "Error: This script requires sudo privileges."
+        echo "Please ensure you have sudo access and try again."
+        exit 1
+    fi
+    
+    # Keep sudo alive throughout the script execution
+    while true; do
+        sudo -n true
+        sleep 60
+        kill -0 "$$" || exit
+    done 2>/dev/null &
+}
+
 function main() {
+    validate_sudo
+    validate_domain
+    validate_credentials
     set_limits
     set_sysctl
     install_docker
