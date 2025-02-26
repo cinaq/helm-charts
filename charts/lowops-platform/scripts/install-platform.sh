@@ -4,9 +4,9 @@ set -e -o pipefail
 
 export GENERAL_CLIENT_NAME="${GENERAL_CLIENT_NAME:-client}"
 export EMAIL_DOMAIN="${EMAIL_DOMAIN:-cinaq.com}"
-export PLATFORM_VERSION="${PLATFORM_VERSION:-v4.0.0-alpha21}"
-export CONTAINER_IMAGE="${CONTAINER_IMAGE:-docker.io/cinaq/low-ops-ansible-roles:0-ci-v4-0-0-alpha21}"
-export CHART_VERSION="${CHART_VERSION:-0.1.12}"
+export PLATFORM_VERSION="${PLATFORM_VERSION:-v4.0.0-alpha22}"
+export CONTAINER_IMAGE="${CONTAINER_IMAGE:-docker.io/cinaq/low-ops-ansible-roles:0-ci-v4-0-0-alpha22}"
+export CHART_VERSION="${CHART_VERSION:-0.1.13}"
 export KIND_CLUSTER_VERSION="${KIND_CLUSTER_VERSION:-v1.30.8}"
 
 function set_limits() {
@@ -275,6 +275,8 @@ function install_platform() {
     local container_image="${CONTAINER_IMAGE}"
     local platform_private_registry_user="${PLATFORM_PRIVATE_REGISTRY_USER}"
     local platform_private_registry_token="${PLATFORM_PRIVATE_REGISTRY_TOKEN}"
+    # generate a random password for the platform
+    local platform_password=$(openssl rand -base64 12)
 
     helm repo add cinaq \
     "https://cinaq.github.io/helm-charts"
@@ -293,6 +295,7 @@ function install_platform() {
     HELM_CMD="$HELM_CMD --set lowops.config.common.email_domain=$email_domain"
     HELM_CMD="$HELM_CMD --set lowops.config.common.platform_private_registry_user=$platform_private_registry_user"
     HELM_CMD="$HELM_CMD --set lowops.config.common.platform_private_registry_token=$platform_private_registry_token"
+    HELM_CMD="$HELM_CMD --set lowops.config.common.keycloak.admin_password=$platform_password"
     if [ -f "$chart_values_file" ]; then
         HELM_CMD="$HELM_CMD -f $chart_values_file"
     fi
@@ -301,6 +304,11 @@ function install_platform() {
     fi
     echo "$HELM_CMD"
     eval "$HELM_CMD"
+
+    echo ">>> After installation, you can login to the platform using the following credentials:"
+    echo ">>> Platform URL: https://portal.${base_domain}"
+    echo ">>> Platform admin username: lowops"
+    echo ">>> Platform admin password: $platform_password"
 }
 
 function validate_domain() {
