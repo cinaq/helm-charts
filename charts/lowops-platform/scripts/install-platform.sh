@@ -275,8 +275,16 @@ function install_platform() {
     local container_image="${CONTAINER_IMAGE}"
     local platform_private_registry_user="${PLATFORM_PRIVATE_REGISTRY_USER}"
     local platform_private_registry_token="${PLATFORM_PRIVATE_REGISTRY_TOKEN}"
-    # generate a random password for the platform
-    local platform_password=$(openssl rand -base64 12)
+    
+    # Check if platform is already installed
+    if ! helm status -n "$namespace" lowops-platform >/dev/null 2>&1; then
+        # Only generate password on initial installation
+        local platform_password=$(openssl rand -base64 12)
+        echo ">>> Initial installation detected. Generated platform password: $platform_password"
+    else
+        echo ">>> Existing installation detected. Keeping current platform password."
+        platform_password=$(kubectl get secret -n "$namespace" keycloak-admin-password -ojsonpath='{.data.keycloak-admin-password}' | base64 --decode)
+    fi
 
     helm repo add cinaq \
     "https://cinaq.github.io/helm-charts"
