@@ -295,7 +295,7 @@ function install_platform() {
     HELM_CMD="$HELM_CMD --set lowops.config.common.email_domain=$email_domain"
     HELM_CMD="$HELM_CMD --set lowops.config.common.platform_private_registry_user=$platform_private_registry_user"
     HELM_CMD="$HELM_CMD --set lowops.config.common.platform_private_registry_token=$platform_private_registry_token"
-    HELM_CMD="$HELM_CMD --set lowops.config.common.keycloak.admin_password=$platform_password"
+    HELM_CMD="$HELM_CMD --set lowops.config.keycloak.admin_password=$platform_password"
     if [ -f "$chart_values_file" ]; then
         HELM_CMD="$HELM_CMD -f $chart_values_file"
     fi
