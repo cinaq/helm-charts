@@ -3,6 +3,16 @@ entries:
   app-generic:
   - apiVersion: v2
     appVersion: 1.0.0
+    created: "2025-03-20T11:52:02.893202814Z"
+    description: A Helm chart for deploying a generic applications on low-ops platform
+    digest: f41d3310f73cc1e08bf2ce031bfb90c28e422e97a4ecf25ba2f8ebab3631dad5
+    name: app-generic
+    type: application
+    urls:
+    - https://github.com/cinaq/helm-charts/releases/download/app-generic-0.1.6/app-generic-0.1.6.tgz
+    version: 0.1.6
+  - apiVersion: v2
+    appVersion: 1.0.0
     created: "2025-03-14T10:31:25.771663417Z"
     description: A Helm chart for deploying a generic applications on low-ops platform
     digest: c1b5e98c3d08671d5e6d46fc5daa0c6619dc5b1ec5124bea3100dfa5d4576f56
@@ -735,4 +745,4 @@ entries:
     urls:
     - https://github.com/cinaq/helm-charts/releases/download/retraced-0.1.0/retraced-0.1.0.tgz
     version: 0.1.0
-generated: "2025-03-14T10:31:25.771975531Z"
+generated: "2025-03-20T11:52:02.893458649Z"
