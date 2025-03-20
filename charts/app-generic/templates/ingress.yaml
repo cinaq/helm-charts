@@ -22,7 +22,7 @@ spec:
                 name: {{ $serviceName }}
                 port:
                   number: {{ $servicePort }}
-            path: /
+            path: {{ .Values.ingress.path }}
             pathType: Prefix
     {{- if .Values.ingress.addHosts }}
     {{- range .Values.ingress.hosts }}

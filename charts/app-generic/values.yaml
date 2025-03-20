@@ -47,6 +47,7 @@ ingress:
   enabled: true
   ingressClassName: nginx
   domain: app.example.com
+  path: /
   annotations: {}
   addHosts: false
   hosts: []
