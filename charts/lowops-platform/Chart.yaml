@@ -2,5 +2,5 @@ apiVersion: v2
 name: lowops-platform
 description: A Helm chart for Low Ops Platform installation
 type: application
-version: 0.1.17
-appVersion: 4.0.0-rc3
+version: 0.1.18
+appVersion: 4.0.0-rc4
