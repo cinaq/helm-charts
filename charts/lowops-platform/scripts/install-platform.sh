@@ -8,6 +8,7 @@ export PLATFORM_VERSION="${PLATFORM_VERSION:-v4.0.0-rc3}"
 export CONTAINER_IMAGE="${CONTAINER_IMAGE:-docker.io/cinaq/low-ops-ansible-roles:0-ci-v4-0-0-rc3}"
 export CHART_VERSION="${CHART_VERSION:-0.1.17}"
 export KIND_CLUSTER_VERSION="${KIND_CLUSTER_VERSION:-v1.30.8}"
+export KUBECONFIG="$(pwd)/kubeconfig.yaml"
 
 function set_limits() {
     echo ">>> Setting limits"
@@ -177,8 +178,8 @@ function create_cluster() {
     if kubectl get nodes > /dev/null 2>&1; then
         echo "cluster is running"
     else
-        kind create cluster --name low-ops --config kind-config.yaml --image "kindest/node:${kind_cluster_version}" -v 1
-        kind get kubeconfig --name low-ops > kubeconfig.yaml
+        sudo kind create cluster --name low-ops --config kind-config.yaml --image "kindest/node:${kind_cluster_version}" -v 1
+        sudo kind get kubeconfig --name low-ops > kubeconfig.yaml
     fi
     # check if cluster is created
     if ! kubectl get nodes > /dev/null 2>&1; then
@@ -242,7 +243,6 @@ function haproxy() {
 }
 
 function install_metallb() {
-
     local start_network="172.18.255.200"
     local end_network="172.18.255.250"
 
@@ -255,10 +255,11 @@ function install_metallb() {
         --set "configInline.address-pools[0].name=default" \
         --set "configInline.address-pools[0].protocol=layer2" \
         --set "configInline.address-pools[0].addresses[0]=${start_network}-${end_network}" \
-        --set "speaker.secretValue=stronk-key"
+        --set "speaker.secretValue=stronk-key" \
+        --kubeconfig "${KUBECONFIG}"
     
     # check if metallb is installed
-    if ! helm status -n metallb metallb > /dev/null 2>&1; then
+    if ! helm status -n metallb metallb --kubeconfig "${KUBECONFIG}" > /dev/null 2>&1; then
         echo "metallb is not installed"
         exit 1
     fi
@@ -277,20 +278,20 @@ function install_platform() {
     local platform_private_registry_token="${PLATFORM_PRIVATE_REGISTRY_TOKEN}"
     
     # Check if platform is already installed
-    if ! helm status -n "$namespace" lowops-platform >/dev/null 2>&1; then
+    if ! helm status -n "$namespace" lowops-platform --kubeconfig "${KUBECONFIG}" >/dev/null 2>&1; then
         # Only generate password on initial installation
         local platform_password=$(openssl rand -base64 12)
         echo ">>> Initial installation detected. Generated platform password: $platform_password"
     else
         echo ">>> Existing installation detected. Keeping current platform password."
-        platform_password=$(kubectl get secret -n "$namespace" keycloak-admin-password -ojsonpath='{.data.keycloak-admin-password}' | base64 --decode)
+        platform_password=$(kubectl get secret -n "$namespace" keycloak-admin-password -ojsonpath='{.data.keycloak-admin-password}' --kubeconfig "${KUBECONFIG}" | base64 --decode)
     fi
 
     helm repo add cinaq \
     "https://cinaq.github.io/helm-charts"
     helm repo update
 
-    HELM_CMD="helm upgrade -i lowops-platform cinaq/lowops-platform --create-namespace -n $namespace"
+    HELM_CMD="helm upgrade -i lowops-platform cinaq/lowops-platform --create-namespace -n $namespace --kubeconfig ${KUBECONFIG}"
     HELM_CMD="$HELM_CMD --set lowops.image.containerImage=$container_image"
     HELM_CMD="$HELM_CMD --set lowops.config.common.enable_letsencrypt=true"
     HELM_CMD="$HELM_CMD --set lowops.config.common.enable_nginx_proxy_protocol=true"
@@ -366,18 +367,34 @@ function validate_credentials() {
 
 function validate_sudo() {
     echo ">>> Validating sudo access"
-    if ! sudo -v &> /dev/null; then
-        echo "Error: This script requires sudo privileges."
-        echo "Please ensure you have sudo access and try again."
-        exit 1
-    fi
     
-    # Keep sudo alive throughout the script execution
+    # Check if sudo works without requiring a password
+    if sudo -n true 2>/dev/null; then
+        echo "Sudo access confirmed without password."
+    else
+        echo "Sudo password is required. Please enter your password."
+        if ! sudo -v; then
+            echo "Error: This script requires sudo privileges."
+            exit 1
+        fi
+    fi
+
+    # Function to cleanup background process on script exit
+    cleanup() {
+        if [ -n "$SUDO_PID" ]; then
+            kill "$SUDO_PID" 2>/dev/null || true
+        fi
+    }
+
+    # Set up trap to cleanup on script exit
+    trap cleanup EXIT
+
+    # Keep sudo alive in background
     while true; do
         sudo -n true
         sleep 60
-        kill -0 "$$" || exit
-    done 2>/dev/null &
+    done &
+    SUDO_PID=$!
 }
 
 function main() {
