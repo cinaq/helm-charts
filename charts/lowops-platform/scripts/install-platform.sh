@@ -4,9 +4,9 @@ set -e -o pipefail
 
 export GENERAL_CLIENT_NAME="${GENERAL_CLIENT_NAME:-client}"
 export EMAIL_DOMAIN="${EMAIL_DOMAIN:-cinaq.com}"
-export PLATFORM_VERSION="${PLATFORM_VERSION:-v4.0.0-rc4}"
-export CONTAINER_IMAGE="${CONTAINER_IMAGE:-docker.io/cinaq/low-ops-ansible-roles:0-ci-v4-0-0-rc4}"
-export CHART_VERSION="${CHART_VERSION:-0.1.18}"
+export PLATFORM_VERSION="${PLATFORM_VERSION:-v4.1.0}"
+export CONTAINER_IMAGE="${CONTAINER_IMAGE:-docker.io/cinaq/low-ops-ansible-roles:0-ci-v4-1-0}"
+export CHART_VERSION="${CHART_VERSION:-0.1.19}"
 export KIND_CLUSTER_VERSION="${KIND_CLUSTER_VERSION:-v1.30.8}"
 export KUBECONFIG="$(pwd)/kubeconfig.yaml"
 
@@ -297,7 +297,7 @@ function install_platform() {
     HELM_CMD="$HELM_CMD --set lowops.config.common.enable_nginx_proxy_protocol=true"
     HELM_CMD="$HELM_CMD --set lowops.config.common.platform_version=$platform_version"
     HELM_CMD="$HELM_CMD --set lowops.config.common.general_client_name=$general_client_name"
-    HELM_CMD="$HELM_CMD --set lowops.config.common.platform_type=free"
+    HELM_CMD="$HELM_CMD --set lowops.config.common.platform_type=starter"
     HELM_CMD="$HELM_CMD --set lowops.config.common.foundation_type=generic"
     HELM_CMD="$HELM_CMD --set lowops.config.common.low_ops_env=dev"
     HELM_CMD="$HELM_CMD --set lowops.config.common.base_domain=$base_domain"
@@ -305,6 +305,8 @@ function install_platform() {
     HELM_CMD="$HELM_CMD --set lowops.config.common.platform_private_registry_user=$platform_private_registry_user"
     HELM_CMD="$HELM_CMD --set lowops.config.common.platform_private_registry_token=$platform_private_registry_token"
     HELM_CMD="$HELM_CMD --set lowops.config.keycloak.admin_password=$platform_password"
+    HELM_CMD="$HELM_CMD --set lowops.config.cnpg.retention_days=7"
+    HELM_CMD="$HELM_CMD --set lowops.config.tekton_cicd.pipeline_lock_enabled=true"
     if [ -f "$chart_values_file" ]; then
         HELM_CMD="$HELM_CMD -f $chart_values_file"
     fi
