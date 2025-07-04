@@ -117,9 +117,9 @@ readinessProbe:
     command:
   tcpSocket:
     port:
-  initialDelaySeconds: 120
+  initialDelaySeconds: 180
   periodSeconds: 30
-  failureThreshold: 30
+  failureThreshold: 40
   timeoutSeconds: 10
   successThreshold: 1
 
@@ -133,9 +133,9 @@ livenessProbe:
     command:
   tcpSocket:
     port:
-  initialDelaySeconds: 120
+  initialDelaySeconds: 180
   periodSeconds: 30
-  failureThreshold: 30
+  failureThreshold: 40
   timeoutSeconds: 10
   successThreshold: 1
 
