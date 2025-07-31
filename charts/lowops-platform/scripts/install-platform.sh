@@ -4,9 +4,9 @@ set -e -o pipefail
 
 export GENERAL_CLIENT_NAME="${GENERAL_CLIENT_NAME:-client}"
 export EMAIL_DOMAIN="${EMAIL_DOMAIN:-cinaq.com}"
-export PLATFORM_VERSION="${PLATFORM_VERSION:-v4.1.1}"
-export CONTAINER_IMAGE="${CONTAINER_IMAGE:-docker.io/cinaq/low-ops-ansible-roles:0-ci-v4-1-1}"
-export CHART_VERSION="${CHART_VERSION:-0.1.20}"
+export PLATFORM_VERSION="${PLATFORM_VERSION:-v4.1.2}"
+export CONTAINER_IMAGE="${CONTAINER_IMAGE:-docker.io/cinaq/low-ops-ansible-roles:0-ci-v4-1-2}"
+export CHART_VERSION="${CHART_VERSION:-0.1.21}"
 export KIND_CLUSTER_VERSION="${KIND_CLUSTER_VERSION:-v1.30.8}"
 export KUBECONFIG="$(pwd)/kubeconfig.yaml"
 
