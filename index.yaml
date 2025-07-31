@@ -466,6 +466,17 @@ entries:
     urls:
     - https://github.com/cinaq/helm-charts/releases/download/app-mendix-1.0.0/app-mendix-1.0.0.tgz
     version: 1.0.0
+  app-nextjs:
+  - apiVersion: v2
+    appVersion: 1.0.0
+    created: "2025-07-31T15:13:59.449230675Z"
+    description: A Helm chart for deploying a nextjs applications on low-ops platform
+    digest: 8c58c332a3e0dcdbb9c3b3d870c97d1ccf4dbb3c7f63e5aa273e33aca2896967
+    name: app-nextjs
+    type: application
+    urls:
+    - https://github.com/cinaq/helm-charts/releases/download/app-nextjs-0.1.0/app-nextjs-0.1.0.tgz
+    version: 0.1.0
   kanister-actionset:
   - apiVersion: v2
     appVersion: 1.16.0
@@ -871,4 +882,4 @@ entries:
     urls:
     - https://github.com/cinaq/helm-charts/releases/download/retraced-0.1.0/retraced-0.1.0.tgz
     version: 0.1.0
-generated: "2025-07-04T16:10:54.078618864Z"
+generated: "2025-07-31T15:13:59.597402423Z"
