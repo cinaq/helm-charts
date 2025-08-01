@@ -107,37 +107,21 @@ autoscale:
   maxSlaveReplicas: 3
   targetCPUUtilizationPercentage: 70
 
-readinessProbe:
-  enabled: true
-  type: httpGet
-  httpGet:
-    path: /
-    port: 8080
-  exec: 
-    command:
-  tcpSocket:
-    port:
-  initialDelaySeconds: 180
-  periodSeconds: 30
-  failureThreshold: 40
-  timeoutSeconds: 10
-  successThreshold: 1
+# available from kubernetes 1.20+
+# max 3 hours
+startupProbe:
+  failureThreshold: 1080
+  periodSeconds: 10
 
+# max 5 minutes
+readinessProbe:
+  periodSeconds: 10
+  failureThreshold: 30
+
+# max 3 minutes
 livenessProbe:
-  enabled: true
-  type: httpGet
-  httpGet:
-    path: /
-    port: 8080
-  exec: 
-    command:
-  tcpSocket:
-    port:
-  initialDelaySeconds: 180
-  periodSeconds: 30
-  failureThreshold: 40
-  timeoutSeconds: 10
-  successThreshold: 1
+  periodSeconds: 10
+  failureThreshold: 18
 
 lifecycle:
   prestop:
