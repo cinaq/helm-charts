@@ -483,6 +483,16 @@ entries:
   app-nextjs:
   - apiVersion: v2
     appVersion: 1.0.0
+    created: "2025-08-12T13:43:00.023703729Z"
+    description: A Helm chart for deploying a nextjs applications on low-ops platform
+    digest: 76e0d157a80618023b7cb64bd7c81869d7301b0ee0cc46b87f46633a42ea822f
+    name: app-nextjs
+    type: application
+    urls:
+    - https://github.com/cinaq/helm-charts/releases/download/app-nextjs-0.1.3/app-nextjs-0.1.3.tgz
+    version: 0.1.3
+  - apiVersion: v2
+    appVersion: 1.0.0
     created: "2025-08-12T13:37:34.936787322Z"
     description: A Helm chart for deploying a nextjs applications on low-ops platform
     digest: 4b96008c2eb0cf1035c1c5b1ec5217c54d88d3c4e28dbe0c250ab93b804fe742
@@ -930,4 +940,4 @@ entries:
     urls:
     - https://github.com/cinaq/helm-charts/releases/download/retraced-0.1.0/retraced-0.1.0.tgz
     version: 0.1.0
-generated: "2025-08-12T13:37:34.937138211Z"
+generated: "2025-08-12T13:43:00.024056411Z"
