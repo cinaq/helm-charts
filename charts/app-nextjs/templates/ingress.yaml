@@ -1,0 +1,47 @@
+{{- if .Values.ingress.enabled -}}
+{{- $serviceName := include "app-nextjs.fullname" . -}}
+{{- $servicePort := .Values.service.externalPort -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    {{- include "app-nextjs.labels" . | nindent 4 }}
+  {{- with .Values.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  ingressClassName: {{ .Values.ingress.ingressClassName }}
+  rules:
+    - host: {{ .Values.ingress.domain }}
+      http:
+        paths:
+          - backend:
+              service:
+                name: {{ $serviceName }}
+                port:
+                  number: {{ $servicePort }}
+            path: {{ .Values.ingress.path }}
+            pathType: Prefix
+    {{- if .Values.ingress.addHosts }}
+    {{- range .Values.ingress.hosts }}
+    - host: {{ . }}
+      http:
+        paths:
+          - backend:
+              service:
+                name: {{ $serviceName }}
+                port:
+                  number: {{ $servicePort }}
+            path: /
+            pathType: Prefix
+    {{- end }}
+    {{- end }}
+  {{- if .Values.ingress.tls.enabled }}
+  tls:
+  - hosts:
+    - {{ .Values.ingress.domain }}
+    secretName: {{ .Values.ingress.tls.secretName }}
+  {{- end }}      
+{{- end -}}
