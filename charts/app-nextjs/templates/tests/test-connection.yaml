@@ -11,5 +11,5 @@ spec:
     - name: wget
       image: busybox
       command: ['wget']
-      args: ['{{ include "app-nextjs.fullname" . }}:{{ .Values.service.port }}']
+      args: ['{{ include "app-nextjs.fullname" . }}:{{ .Values.service.internalPort }}']
   restartPolicy: Never
