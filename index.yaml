@@ -680,6 +680,16 @@ entries:
     version: 0.1.0
   lowops-platform:
   - apiVersion: v2
+    appVersion: 4.2.1
+    created: "2025-09-19T10:03:40.324853135Z"
+    description: A Helm chart for Low Ops Platform installation
+    digest: be647adfd6bf36e7d4f4859679bb468120a9de9239759d8310098921f4f6e992
+    name: lowops-platform
+    type: application
+    urls:
+    - https://github.com/cinaq/helm-charts/releases/download/lowops-platform-0.1.24/lowops-platform-0.1.24.tgz
+    version: 0.1.24
+  - apiVersion: v2
     appVersion: 4.2.1-rc2
     created: "2025-09-02T15:26:37.266717176Z"
     description: A Helm chart for Low Ops Platform installation
@@ -950,4 +960,4 @@ entries:
     urls:
     - https://github.com/cinaq/helm-charts/releases/download/retraced-0.1.0/retraced-0.1.0.tgz
     version: 0.1.0
-generated: "2025-09-02T15:26:37.267200502Z"
+generated: "2025-09-19T10:03:40.325232439Z"
