@@ -40,7 +40,7 @@ spec:
       volumes:
         - name: values-secret
           secret:
-            secretName: {{ include "lowops.fullname" . }}-values
+            secretName: lowops-platform-values
       {{- if .Values.lowops.imagePullSecrets }}
       imagePullSecrets: {{ toYaml .Values.lowops.imagePullSecrets | nindent 6 }}
       {{- end }}
