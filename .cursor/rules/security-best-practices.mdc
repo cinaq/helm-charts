@@ -1,0 +1,298 @@
+---
+description: Security best practices for Helm charts
+globs: charts/**/templates/**/*.yaml
+alwaysApply: false
+---
+
+# Security Best Practices
+
+## Service Account
+
+Always create a dedicated service account:
+
+```yaml
+# ✅ GOOD
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""  # Auto-generated if empty
+
+# In deployment:
+spec:
+  serviceAccountName: {{ include "chart-name.serviceAccountName" . }}
+  automountServiceAccountToken: false  # Only if not using K8s API
+```
+
+## RBAC
+
+Minimize permissions - only add what's needed:
+
+```yaml
+# Only include if app needs K8s API access
+{{- if .Values.rbac.create }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ include "chart-name.fullname" . }}
+rules:
+- apiGroups: [""]
+  resources: ["configmaps"]
+  verbs: ["get", "list"]  # Minimal verbs
+{{- end }}
+```
+
+## Pod Security Context
+
+Run as non-root with dropped capabilities:
+
+```yaml
+# ✅ GOOD
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  runAsGroup: 1000
+  fsGroup: 1000
+  seccompProfile:
+    type: RuntimeDefault
+
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop:
+    - ALL
+
+# ❌ BAD - privileged container
+securityContext:
+  privileged: true
+  runAsUser: 0
+```
+
+## Secrets Management
+
+Never hardcode secrets in values:
+
+```yaml
+# ✅ GOOD - reference existing secret
+env:
+  - name: API_KEY
+    valueFrom:
+      secretKeyRef:
+        name: {{ .Values.existingSecret }}
+        key: api-key
+
+# ✅ GOOD - generate secret in template
+{{- if not .Values.existingSecret }}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ include "chart-name.fullname" . }}
+type: Opaque
+data:
+  # Use lookup to preserve on upgrade
+  {{- $secret := lookup "v1" "Secret" .Release.Namespace (include "chart-name.fullname" .) }}
+  {{- if $secret }}
+  api-key: {{ $secret.data.apiKey }}
+  {{- else }}
+  api-key: {{ randAlphaNum 32 | b64enc }}
+  {{- end }}
+{{- end }}
+
+# ❌ BAD - secret in values.yaml
+apiKey: "my-secret-key-12345"
+```
+
+## Image Security
+
+Use specific tags and pull policies:
+
+```yaml
+# ✅ GOOD
+image:
+  repository: myapp
+  pullPolicy: IfNotPresent
+  tag: "1.2.3"  # Specific version, not 'latest'
+
+# ❌ BAD
+image:
+  repository: myapp
+  tag: latest  # Unpredictable updates
+```
+
+## Network Policies
+
+Implement least-privilege networking:
+
+```yaml
+# Default deny, explicit allow
+networkPolicy:
+  enabled: false  # Opt-in for compatibility
+  policyTypes:
+  - Ingress
+  - Egress
+  
+  # Only allow required connections
+  ingress:
+    - from:
+      - namespaceSelector:
+          matchLabels:
+            name: ingress-nginx
+  
+  egress:
+    # DNS (required)
+    - to:
+      - namespaceSelector:
+          matchLabels:
+            name: kube-system
+      ports:
+      - port: 53
+        protocol: UDP
+    
+    # Only allow to required services
+    - to:
+      - podSelector:
+          matchLabels:
+            app: database
+```
+
+## Resource Limits
+
+Prevent resource exhaustion:
+
+```yaml
+# ✅ GOOD - defined limits
+resources:
+  limits:
+    cpu: 1000m
+    memory: 1Gi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+# ❌ BAD - no limits (can consume all node resources)
+resources: {}
+```
+
+## Pod Disruption Budget
+
+Ensure availability during maintenance:
+
+```yaml
+{{- if gt (.Values.replicaCount | int) 1 }}
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "chart-name.fullname" . }}
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      {{- include "chart-name.selectorLabels" . | nindent 6 }}
+{{- end }}
+```
+
+## Avoid Host Mounts
+
+Don't mount host paths unless absolutely necessary:
+
+```yaml
+# ❌ BAD - security risk
+volumes:
+  - name: host-root
+    hostPath:
+      path: /
+      type: Directory
+
+# ✅ GOOD - use PVC or emptyDir
+volumes:
+  - name: data
+    persistentVolumeClaim:
+      claimName: {{ include "chart-name.fullname" . }}
+  - name: tmp
+    emptyDir: {}
+```
+
+## Ingress TLS
+
+Require TLS for production:
+
+```yaml
+ingress:
+  enabled: true
+  tls:
+    enabled: true
+    secretName: {{ include "chart-name.fullname" . }}-tls
+  annotations:
+    cert-manager.io/cluster-issuer: "lowops-cert-issuer"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+```
+
+## Environment Variable Validation
+
+Validate required configuration:
+
+```yaml
+{{- if not .Values.database.host }}
+{{- fail "database.host is required" }}
+{{- end }}
+
+{{- if not .Values.existingSecret }}
+{{- if not .Values.apiKey }}
+{{- fail "Either existingSecret or apiKey must be provided" }}
+{{- end }}
+{{- end }}
+```
+
+## Liveness/Readiness Probes
+
+Prevent unhealthy pods from receiving traffic:
+
+```yaml
+livenessProbe:
+  httpGet:
+    path: /healthz
+    port: http
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+readinessProbe:
+  httpGet:
+    path: /ready
+    port: http
+  initialDelaySeconds: 5
+  periodSeconds: 5
+  timeoutSeconds: 3
+  failureThreshold: 3
+```
+
+## Immutable ConfigMaps/Secrets
+
+Consider using immutable resources for critical config:
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "chart-name.fullname" . }}-config
+immutable: true  # Requires pod restart to change
+data:
+  config.yaml: |
+    ...
+```
+
+## Security Scanning
+
+Charts should be scannable with security tools:
+
+```bash
+# Test with kubesec
+helm template ./chart | kubesec scan -
+
+# Test with kube-score
+helm template ./chart | kube-score score -
+
+# Test with Polaris
+helm template ./chart | polaris audit --audit-path -
+```
