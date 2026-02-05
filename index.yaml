@@ -3,6 +3,16 @@ entries:
   app-generic:
   - apiVersion: v2
     appVersion: 1.0.0
+    created: "2026-02-05T16:02:06.366573633Z"
+    description: A Helm chart for deploying a generic applications on low-ops platform
+    digest: 658e1f0db6fc20f6bb94451566a298b1d0c09ecdd07d6ae86d4c38a3054e43bc
+    name: app-generic
+    type: application
+    urls:
+    - https://github.com/cinaq/helm-charts/releases/download/app-generic-0.2.0/app-generic-0.2.0.tgz
+    version: 0.2.0
+  - apiVersion: v2
+    appVersion: 1.0.0
     created: "2025-03-20T11:52:02.893202814Z"
     description: A Helm chart for deploying a generic applications on low-ops platform
     digest: f41d3310f73cc1e08bf2ce031bfb90c28e422e97a4ecf25ba2f8ebab3631dad5
@@ -72,6 +82,20 @@ entries:
     - https://github.com/cinaq/helm-charts/releases/download/app-generic-0.1.0/app-generic-0.1.0.tgz
     version: 0.1.0
   app-mendix:
+  - apiVersion: v2
+    created: "2026-02-05T16:02:06.591531724Z"
+    description: Mendix Application Chart.
+    digest: 873d4469fbf045fa73fbf31cfb9c5a0a37dd2bab83b1c2680c2cc67253b64749
+    icon: https://cinaq.github.io/helm-charts/icons/mendix-logo.png
+    maintainers:
+    - email: x@cinaq.com
+      name: Xiwen Cheng
+    - email: viktor@cinaq.com
+      name: Viktor Berlov
+    name: app-mendix
+    urls:
+    - https://github.com/cinaq/helm-charts/releases/download/app-mendix-3.1.0/app-mendix-3.1.0.tgz
+    version: 3.1.0
   - apiVersion: v2
     created: "2025-08-02T10:50:08.357823557Z"
     description: Mendix Application Chart.
@@ -483,6 +507,16 @@ entries:
   app-nextjs:
   - apiVersion: v2
     appVersion: 1.0.0
+    created: "2026-02-05T16:02:06.795514603Z"
+    description: A Helm chart for deploying a nextjs applications on low-ops platform
+    digest: 7ffb150d3fd9d5a926b4aec1a3a187dc87d59de9f4eba5b90646ec486e5f99cf
+    name: app-nextjs
+    type: application
+    urls:
+    - https://github.com/cinaq/helm-charts/releases/download/app-nextjs-0.2.0/app-nextjs-0.2.0.tgz
+    version: 0.2.0
+  - apiVersion: v2
+    appVersion: 1.0.0
     created: "2025-08-12T13:43:00.023703729Z"
     description: A Helm chart for deploying a nextjs applications on low-ops platform
     digest: 76e0d157a80618023b7cb64bd7c81869d7301b0ee0cc46b87f46633a42ea822f
@@ -668,6 +702,16 @@ entries:
     - https://github.com/cinaq/helm-charts/releases/download/loki-stack-2.6.2/loki-stack-2.6.2.tgz
     version: 2.6.2
   lowops-platform:
+  - apiVersion: v2
+    appVersion: 4.5.0
+    created: "2026-02-05T16:02:06.9916895Z"
+    description: A Helm chart for Low Ops Platform installation
+    digest: c602a589d44317a4b7b03b19c1728954fcd44117cb4b0503e10b9cae80294e14
+    name: lowops-platform
+    type: application
+    urls:
+    - https://github.com/cinaq/helm-charts/releases/download/lowops-platform-0.1.27/lowops-platform-0.1.27.tgz
+    version: 0.1.27
   - apiVersion: v2
     appVersion: 4.2.1
     created: "2025-11-01T15:37:01.395981944Z"
@@ -969,4 +1013,4 @@ entries:
     urls:
     - https://github.com/cinaq/helm-charts/releases/download/retraced-0.1.0/retraced-0.1.0.tgz
     version: 0.1.0
-generated: "2025-11-01T15:37:01.396359179Z"
+generated: "2026-02-05T16:02:06.992157421Z"
