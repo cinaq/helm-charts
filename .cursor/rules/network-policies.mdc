@@ -1,0 +1,258 @@
+---
+description: Network policy implementation patterns for app isolation
+globs: charts/**/templates/networkpolicy.yaml
+alwaysApply: false
+---
+
+# Network Policy Patterns
+
+## Standard Structure
+
+Network policies for app charts follow this pattern:
+
+```yaml
+{{- if .Values.networkPolicy.enabled -}}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "chart-name.fullname" . }}
+  labels:
+    {{- include "chart-name.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      {{- include "chart-name.selectorLabels" . | nindent 6 }}
+  policyTypes:
+  - Ingress
+  - Egress
+  
+  ingress: [...]
+  egress: [...]
+{{- end -}}
+```
+
+## Ingress Rules
+
+Always allow ingress from nginx ingress controller:
+
+```yaml
+ingress:
+{{- if .Values.networkPolicy.ingress.enabled }}
+- from:
+  {{- if .Values.networkPolicy.ingress.namespaceSelector }}
+  - namespaceSelector:
+      matchLabels:
+        {{- toYaml .Values.networkPolicy.ingress.namespaceSelector | nindent 10 }}
+    {{- if .Values.networkPolicy.ingress.podSelector }}
+    podSelector:
+      matchLabels:
+        {{- toYaml .Values.networkPolicy.ingress.podSelector | nindent 10 }}
+    {{- end }}
+  {{- else }}
+  - namespaceSelector: {}  # Allow from any namespace
+  {{- end }}
+  ports:
+  - protocol: TCP
+    port: {{ .Values.service.internalPort }}
+{{- end }}
+```
+
+## Egress Rules - DNS
+
+DNS is ALWAYS required (first egress rule):
+
+```yaml
+egress:
+# Rule 1: DNS resolution (REQUIRED)
+- to:
+  - namespaceSelector:
+      matchLabels:
+        name: kube-system
+    podSelector:
+      matchLabels:
+        k8s-app: kube-dns
+  ports:
+  - protocol: UDP
+    port: 53
+  - protocol: TCP
+    port: 53
+```
+
+## Egress Rules - PostgreSQL
+
+Support both same-namespace and cross-namespace databases:
+
+```yaml
+# Rule 2: PostgreSQL database
+{{- if .Values.networkPolicy.egress.postgresql.enabled }}
+- to:
+  {{- if .Values.networkPolicy.egress.postgresql.namespaceSelector }}
+  - namespaceSelector:
+      matchLabels:
+        {{- toYaml .Values.networkPolicy.egress.postgresql.namespaceSelector | nindent 10 }}
+  {{- else }}
+  - podSelector: {}  # Same namespace
+  {{- end }}
+  {{- if .Values.networkPolicy.egress.postgresql.podSelector }}
+    podSelector:
+      matchLabels:
+        {{- toYaml .Values.networkPolicy.egress.postgresql.podSelector | nindent 10 }}
+  {{- end }}
+  ports:
+  - protocol: TCP
+    port: {{ .Values.networkPolicy.egress.postgresql.port | default 5432 }}
+{{- end }}
+```
+
+## Egress Rules - S3 Gateway
+
+Reference platform S3 gateway service:
+
+```yaml
+# Rule 3: S3 Gateway (object storage)
+{{- if .Values.networkPolicy.egress.s3Gateway.enabled }}
+- to:
+  - namespaceSelector:
+      matchLabels:
+        {{- toYaml .Values.networkPolicy.egress.s3Gateway.namespaceSelector | nindent 10 }}
+    podSelector:
+      matchLabels:
+        {{- toYaml .Values.networkPolicy.egress.s3Gateway.podSelector | nindent 10 }}
+  ports:
+  - protocol: TCP
+    port: {{ .Values.networkPolicy.egress.s3Gateway.port | default 9000 }}
+{{- end }}
+```
+
+## Egress Rules - Observability
+
+Support OTEL/Tempo tracing:
+
+```yaml
+# Rule 4: Tempo/OTEL (observability)
+{{- if .Values.networkPolicy.egress.tempo.enabled }}
+- to:
+  - namespaceSelector:
+      matchLabels:
+        {{- toYaml .Values.networkPolicy.egress.tempo.namespaceSelector | nindent 10 }}
+    podSelector:
+      matchLabels:
+        {{- toYaml .Values.networkPolicy.egress.tempo.podSelector | nindent 10 }}
+  ports:
+  - protocol: TCP
+    port: {{ .Values.networkPolicy.egress.tempo.grpcPort | default 4317 }}
+  - protocol: TCP
+    port: {{ .Values.networkPolicy.egress.tempo.httpPort | default 4318 }}
+{{- end }}
+```
+
+## Egress Rules - External
+
+Allow controlled external connectivity:
+
+```yaml
+# Rule 5: External connectivity (webhooks, APIs, etc.)
+{{- if .Values.networkPolicy.egress.external.enabled }}
+- to:
+  - ipBlock:
+      cidr: 0.0.0.0/0
+      {{- if .Values.networkPolicy.egress.external.exceptCIDRs }}
+      except:
+      {{- toYaml .Values.networkPolicy.egress.external.exceptCIDRs | nindent 6 }}
+      {{- end }}
+  {{- if .Values.networkPolicy.egress.external.ports }}
+  ports:
+  {{- toYaml .Values.networkPolicy.egress.external.ports | nindent 2 }}
+  {{- else }}
+  ports:
+  - protocol: TCP
+    port: 80
+  - protocol: TCP
+    port: 443
+  {{- end }}
+{{- end }}
+```
+
+## Custom Rules
+
+Always support custom egress rules:
+
+```yaml
+# Rule 6: Custom egress rules
+{{- if .Values.networkPolicy.egress.custom }}
+{{- toYaml .Values.networkPolicy.egress.custom | nindent 2 }}
+{{- end }}
+```
+
+## Values Configuration
+
+Corresponding values.yaml structure:
+
+```yaml
+networkPolicy:
+  enabled: false  # Must be explicitly enabled
+  
+  ingress:
+    enabled: true
+    namespaceSelector:
+      name: ingress-nginx
+    podSelector: {}
+  
+  egress:
+    postgresql:
+      enabled: true
+      port: 5432
+      namespaceSelector: {}  # Empty = same namespace
+      podSelector: {}
+    
+    s3Gateway:
+      enabled: true
+      port: 9000
+      namespaceSelector:
+        name: lowops-data
+      podSelector:
+        app.kubernetes.io/component: s3-gateway-apps
+    
+    tempo:
+      enabled: true
+      grpcPort: 4317
+      httpPort: 4318
+      namespaceSelector:
+        name: lowops-monitoring
+      podSelector:
+        app.kubernetes.io/name: opentelemetry-collector
+    
+    external:
+      enabled: true
+      ports:
+        - protocol: TCP
+          port: 80
+        - protocol: TCP
+          port: 443
+      exceptCIDRs: []
+    
+    custom: []
+```
+
+## Testing
+
+Always test network policies:
+
+```bash
+# Deploy with policy disabled
+helm install test-app ./chart --set networkPolicy.enabled=false
+
+# Verify connectivity
+kubectl exec test-app -- nc -zv postgres 5432
+kubectl exec test-app -- curl https://google.com
+
+# Enable policy
+helm upgrade test-app ./chart --set networkPolicy.enabled=true
+
+# Verify allowed connections work
+kubectl exec test-app -- nc -zv postgres 5432
+kubectl exec test-app -- curl https://google.com
+
+# Verify denied connections fail
+kubectl exec test-app -- nc -zv other-service 80
+```

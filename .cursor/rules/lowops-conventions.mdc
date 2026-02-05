@@ -1,0 +1,248 @@
+---
+description: Low-Ops Platform specific conventions and patterns
+alwaysApply: true
+---
+
+# Low-Ops Platform Conventions
+
+## Chart Naming
+
+Charts follow the `app-{type}` pattern:
+- `app-generic` - Generic containerized applications
+- `app-mendix` - Mendix low-code applications
+- `app-nextjs` - Next.js applications
+
+Platform charts use descriptive names:
+- `lowops-platform` - Platform installer
+- `kanister-*` - Backup and recovery resources
+
+## Image Pull Secrets
+
+All app charts use `dockerconfigjson` secret:
+
+```yaml
+imagePullSecrets:
+  - name: dockerconfigjson
+```
+
+This secret is managed by the Low-Ops Platform and contains registry credentials.
+
+## Service Defaults
+
+Standard service configuration:
+
+```yaml
+service:
+  type: ClusterIP        # Always ClusterIP (ingress handles external)
+  externalPort: 80       # External port (from ingress)
+  internalPort: 8080     # Container port (actual app port)
+```
+
+## Ingress Configuration
+
+All apps use nginx ingress controller:
+
+```yaml
+ingress:
+  enabled: true
+  ingressClassName: nginx
+  domain: app.example.com
+  path: /
+  annotations: {}
+  tls:
+    enabled: false
+    secretName: secret-tls
+```
+
+For cert-manager integration:
+```yaml
+annotations:
+  cert-manager.io/cluster-issuer: "lowops-cert-issuer"
+```
+
+## OpenShift Support
+
+App charts support OpenShift routes:
+
+```yaml
+# values.yaml
+route:
+  enabled: false  # Enable for OpenShift
+  host: app.example.com
+  annotations: {}
+  tls:
+    enabled: false
+
+# Template
+{{- if .Values.route.enabled }}
+apiVersion: route.openshift.io/v1
+kind: Route
+...
+{{- end }}
+```
+
+## Resource Management
+
+Leave resources empty by default (let platform admins set defaults):
+
+```yaml
+resources: {}
+  # limits:
+  #   cpu: 1
+  #   memory: 1Gi
+  # requests:
+  #   cpu: 0.5
+  #   memory: 512Mi
+```
+
+## Platform Integration
+
+### Database Connection
+
+Apps connect to CloudNative-PG clusters:
+
+```yaml
+env:
+  - name: DATABASE_HOST
+    value: postgres-cluster-rw.namespace.svc.cluster.local
+  - name: DATABASE_PORT
+    value: "5432"
+  - name: DATABASE_NAME
+    valueFrom:
+      secretKeyRef:
+        name: app-db-credentials
+        key: dbname
+```
+
+### S3 Storage
+
+Apps use s3-gateway-apps for object storage:
+
+```yaml
+env:
+  - name: S3_ENDPOINT
+    value: s3-gateway-apps.lowops-data.svc.cluster.local:9000
+  - name: S3_BUCKET_NAME
+    value: app-bucket-name
+  - name: S3_ACCESS_KEY_ID
+    valueFrom:
+      secretKeyRef:
+        name: s3-credentials
+        key: access-key
+```
+
+### Observability
+
+Apps should support OTEL tracing:
+
+```yaml
+env:
+  - name: OTEL_EXPORTER_OTLP_ENDPOINT
+    value: http://otel-collector.lowops-monitoring.svc.cluster.local:4318
+  - name: OTEL_SERVICE_NAME
+    value: {{ include "chart-name.fullname" . }}
+```
+
+## Security Context
+
+Prefer non-root containers:
+
+```yaml
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  fsGroup: 1000
+
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+    - ALL
+  readOnlyRootFilesystem: true
+```
+
+## Health Checks
+
+Standard probe configuration:
+
+```yaml
+# For Mendix apps - long startup time
+startupProbe:
+  httpGet:
+    path: /
+    port: http
+  failureThreshold: 1080  # 3 hours max
+  periodSeconds: 10
+
+readinessProbe:
+  httpGet:
+    path: /
+    port: http
+  periodSeconds: 10
+  failureThreshold: 30  # 5 minutes
+
+livenessProbe:
+  httpGet:
+    path: /
+    port: http
+  periodSeconds: 10
+  failureThreshold: 18  # 3 minutes
+```
+
+## Chart Tests
+
+Include basic connectivity test:
+
+```yaml
+# templates/tests/test-connection.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "chart-name.fullname" . }}-test-connection"
+  labels:
+    {{- include "chart-name.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args: ['{{ include "chart-name.fullname" . }}:{{ .Values.service.externalPort }}']
+  restartPolicy: Never
+```
+
+## NOTES.txt
+
+Provide helpful post-install instructions:
+
+```yaml
+# templates/NOTES.txt
+1. Get the application URL by running these commands:
+{{- if .Values.ingress.enabled }}
+  https://{{ .Values.ingress.domain }}
+{{- else if contains "NodePort" .Values.service.type }}
+  export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "chart-name.fullname" . }})
+  export NODE_IP=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
+  echo http://$NODE_IP:$NODE_PORT
+{{- else }}
+  kubectl port-forward --namespace {{ .Release.Namespace }} svc/{{ include "chart-name.fullname" . }} 8080:{{ .Values.service.externalPort }}
+  echo "Visit http://127.0.0.1:8080"
+{{- end }}
+```
+
+## Backward Compatibility
+
+When adding new features:
+- Default to `enabled: false` for opt-in
+- Never remove existing values (deprecate instead)
+- Maintain compatibility for at least 2 major versions
+- Document breaking changes in Chart.yaml annotations
+
+## Multi-Tenancy Support
+
+Charts must support tenant isolation:
+- Use namespace-based isolation
+- Support network policies (disabled by default)
+- Use unique release names per tenant
+- No hardcoded cluster-wide resources (use namespaced resources)

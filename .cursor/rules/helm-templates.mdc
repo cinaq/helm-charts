@@ -1,0 +1,192 @@
+---
+description: Helm template patterns and best practices
+globs: charts/**/templates/**/*.yaml
+alwaysApply: false
+---
+
+# Helm Template Patterns
+
+## Helper Template Standards
+
+All charts must define standard helpers in `_helpers.tpl`:
+
+```yaml
+{{/* Expand the name of the chart */}}
+{{- define "chart-name.name" -}}
+{{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
+{{- end }}
+
+{{/* Create a default fully qualified app name */}}
+{{- define "chart-name.fullname" -}}
+{{- if .Values.fullnameOverride }}
+{{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
+{{- else }}
+{{- $name := default .Chart.Name .Values.nameOverride }}
+{{- if contains $name .Release.Name }}
+{{- .Release.Name | trunc 63 | trimSuffix "-" }}
+{{- else }}
+{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" }}
+{{- end }}
+{{- end }}
+{{- end }}
+
+{{/* Common labels - REQUIRED */}}
+{{- define "chart-name.labels" -}}
+helm.sh/chart: {{ include "chart-name.chart" . }}
+{{ include "chart-name.selectorLabels" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end }}
+
+{{/* Selector labels - REQUIRED */}}
+{{- define "chart-name.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "chart-name.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+```
+
+## Label Usage
+
+Always use helper templates for labels:
+
+```yaml
+# ✅ GOOD
+metadata:
+  name: {{ include "chart-name.fullname" . }}
+  labels:
+    {{- include "chart-name.labels" . | nindent 4 }}
+
+# ❌ BAD - hardcoded labels
+metadata:
+  name: my-app
+  labels:
+    app: my-app
+```
+
+## Selector Consistency
+
+Use selectorLabels helper for consistency:
+
+```yaml
+# Deployment
+spec:
+  selector:
+    matchLabels:
+      {{- include "chart-name.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "chart-name.selectorLabels" . | nindent 8 }}
+
+# Service
+spec:
+  selector:
+    {{- include "chart-name.selectorLabels" . | nindent 4 }}
+
+# NetworkPolicy
+spec:
+  podSelector:
+    matchLabels:
+      {{- include "chart-name.selectorLabels" . | nindent 6 }}
+```
+
+## Conditional Resources
+
+Use if/end for optional resources:
+
+```yaml
+{{- if .Values.ingress.enabled -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "chart-name.fullname" . }}
+...
+{{- end }}
+```
+
+## Indentation
+
+Use `nindent` for proper YAML formatting:
+
+```yaml
+# ✅ GOOD
+labels:
+  {{- include "chart-name.labels" . | nindent 4 }}
+
+# ❌ BAD - incorrect indentation
+labels:
+{{ include "chart-name.labels" . | indent 4 }}
+```
+
+## Value Access
+
+Always provide defaults for optional values:
+
+```yaml
+# ✅ GOOD
+replicas: {{ .Values.replicaCount | default 1 }}
+port: {{ .Values.service.port | default 80 }}
+
+# ✅ GOOD - with validation
+{{- if not .Values.image.repository }}
+{{- fail "image.repository is required" }}
+{{- end }}
+```
+
+## String Quoting
+
+Quote strings that might be interpreted as other types:
+
+```yaml
+# ✅ GOOD
+version: {{ .Chart.AppVersion | quote }}
+annotation: {{ .Values.annotation | quote }}
+
+# Integers and booleans don't need quotes
+replicas: {{ .Values.replicaCount }}
+enabled: {{ .Values.ingress.enabled }}
+```
+
+## toYaml for Complex Structures
+
+Use `toYaml` for nested structures:
+
+```yaml
+# ✅ GOOD
+{{- if .Values.resources }}
+resources:
+  {{- toYaml .Values.resources | nindent 2 }}
+{{- end }}
+
+# ✅ GOOD - with custom egress rules
+{{- if .Values.networkPolicy.egress.custom }}
+{{- toYaml .Values.networkPolicy.egress.custom | nindent 2 }}
+{{- end }}
+```
+
+## Resource Names
+
+Always use fullname helper for resource names:
+
+```yaml
+metadata:
+  name: {{ include "chart-name.fullname" . }}
+  # For multiple resources of same type, add suffix:
+  name: {{ include "chart-name.fullname" . }}-api
+```
+
+## Comments in Templates
+
+Add comments for complex logic:
+
+```yaml
+{{/*
+Allow ingress from nginx ingress controller.
+Supports both namespace and pod selectors for flexibility.
+*/}}
+{{- if .Values.networkPolicy.ingress.enabled }}
+...
+{{- end }}
+```

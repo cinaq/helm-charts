@@ -1,0 +1,257 @@
+---
+description: values.yaml conventions and documentation standards
+globs: charts/**/values.yaml
+alwaysApply: false
+---
+
+# values.yaml Conventions
+
+## Documentation
+
+Every value must have a comment explaining its purpose:
+
+```yaml
+# ✅ GOOD
+# Number of pod replicas to run
+replicaCount: 1
+
+# Container image configuration
+image:
+  # Image repository
+  repository: nginx
+  # Image pull policy
+  pullPolicy: IfNotPresent
+  # Overrides the image tag (default: chart appVersion)
+  tag: ""
+
+# ❌ BAD - no comments
+replicaCount: 1
+image:
+  repository: nginx
+```
+
+## Structure Organization
+
+Organize values.yaml logically:
+
+```yaml
+# 1. Replica and scaling configuration
+replicaCount: 1
+autoscaling:
+  enabled: false
+
+# 2. Image configuration
+image:
+  repository: nginx
+  tag: ""
+
+# 3. Service account
+serviceAccount:
+  create: true
+
+# 4. Pod configuration
+podAnnotations: {}
+podSecurityContext: {}
+
+# 5. Container configuration
+securityContext: {}
+env: []
+
+# 6. Service and networking
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: false
+
+networkPolicy:
+  enabled: false
+
+# 7. Resources and scheduling
+resources: {}
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+# 8. Application-specific settings
+# (after generic Kubernetes settings)
+```
+
+## Default Values
+
+Provide sensible defaults:
+
+```yaml
+# ✅ GOOD - safe defaults
+replicaCount: 1
+resources: {}  # Let users consciously set limits
+podSecurityContext: {}
+
+# ✅ GOOD - disabled by default for opt-in features
+networkPolicy:
+  enabled: false  # Must be explicitly enabled
+
+autoscaling:
+  enabled: false
+
+ingress:
+  enabled: true  # Enable if commonly used
+```
+
+## Nested Configuration
+
+Use clear hierarchical structure:
+
+```yaml
+# ✅ GOOD
+networkPolicy:
+  enabled: false
+  ingress:
+    enabled: true
+    namespaceSelector:
+      name: ingress-nginx
+  egress:
+    postgresql:
+      enabled: true
+      port: 5432
+    external:
+      enabled: true
+      ports:
+        - protocol: TCP
+          port: 80
+
+# ❌ BAD - flat structure
+networkPolicyEnabled: false
+networkPolicyIngressEnabled: true
+networkPolicyPostgresPort: 5432
+```
+
+## Empty Structures
+
+Use empty maps/arrays for optional configuration:
+
+```yaml
+# ✅ GOOD
+env: []           # Empty array for list additions
+annotations: {}   # Empty map for key-value additions
+resources: {}     # Empty map for optional resource limits
+
+# When user adds values:
+env:
+  - name: DATABASE_URL
+    value: postgres://...
+
+annotations:
+  prometheus.io/scrape: "true"
+```
+
+## Examples in Comments
+
+Provide examples for complex configurations:
+
+```yaml
+# Environment variables for the container
+env: []
+  # - name: DATABASE_URL
+  #   value: postgres://postgres:5432/mydb
+  # - name: API_KEY
+  #   valueFrom:
+  #     secretKeyRef:
+  #       name: api-secret
+  #       key: api-key
+
+# Custom network policy egress rules
+networkPolicy:
+  egress:
+    custom: []
+      # - to:
+      #   - podSelector:
+      #       matchLabels:
+      #         app: redis
+      #   ports:
+      #   - protocol: TCP
+      #     port: 6379
+```
+
+## Boolean Values
+
+Use explicit true/false:
+
+```yaml
+# ✅ GOOD
+enabled: false
+create: true
+
+# ❌ BAD
+enabled: no
+create: yes
+```
+
+## String vs Number
+
+Be consistent with types:
+
+```yaml
+# ✅ GOOD
+service:
+  port: 80          # Number
+  targetPort: 8080  # Number
+
+image:
+  tag: "1.0.0"      # String (versions should be strings)
+
+# Version strings must be quoted
+appVersion: "1.0.0"  # Not 1.0.0 (would be float)
+```
+
+## Kubernetes API Versions
+
+Document required Kubernetes versions for features:
+
+```yaml
+# Horizontal Pod Autoscaler (requires Kubernetes 1.23+)
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+
+# Network policies (requires CNI plugin with NetworkPolicy support)
+networkPolicy:
+  enabled: false
+```
+
+## Secret References
+
+Prefer secretKeyRef over hardcoded secrets:
+
+```yaml
+# ✅ GOOD - reference existing secret
+env:
+  - name: DATABASE_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: postgres-credentials
+        key: password
+
+# Name of existing secret with credentials
+secretName: ""
+
+# ❌ BAD - secrets in values
+database:
+  password: "mysecretpassword"  # Never do this!
+```
+
+## Deprecation Notices
+
+Mark deprecated values clearly:
+
+```yaml
+# DEPRECATED: Use service.port instead. Will be removed in v2.0.0
+servicePort: 80
+
+# Use this instead
+service:
+  port: 80
+```

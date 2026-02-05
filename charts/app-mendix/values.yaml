@@ -98,9 +98,73 @@ route:
     enabled: false
 
 networkPolicy:
-  enabled: true
+  # Enable network policy for namespace isolation (SaaS mode)
+  enabled: false
+  
+  # Ingress configuration
   ingress:
-    allowed: true
+    enabled: true
+    # Namespace selector for ingress controller
+    namespaceSelector:
+      name: ingress-nginx
+    # Pod selector for ingress controller (optional)
+    podSelector: {}
+      # app.kubernetes.io/name: ingress-nginx
+  
+  # Egress configuration
+  egress:
+    # PostgreSQL database
+    postgresql:
+      enabled: true
+      port: 5432
+      # Leave empty for same namespace, or specify:
+      namespaceSelector: {}
+        # name: lowops-data
+      podSelector: {}
+        # cnpg.io/cluster: my-cluster
+    
+    # S3 Gateway (Minio)
+    s3Gateway:
+      enabled: true
+      port: 9000
+      namespaceSelector:
+        name: lowops-data
+      podSelector:
+        app.kubernetes.io/component: s3-gateway-apps
+    
+    # Tempo/OTEL tracing
+    tempo:
+      enabled: true
+      grpcPort: 4317
+      httpPort: 4318
+      namespaceSelector:
+        name: lowops-monitoring
+      podSelector:
+        app.kubernetes.io/name: opentelemetry-collector
+    
+    # External connectivity (webhooks, APIs, etc.)
+    external:
+      enabled: true
+      ports:
+        - protocol: TCP
+          port: 80
+        - protocol: TCP
+          port: 443
+      # Optionally exclude internal cluster CIDRs
+      exceptCIDRs: []
+        # - 10.0.0.0/8
+        # - 172.16.0.0/12
+        # - 192.168.0.0/16
+    
+    # Custom egress rules (advanced use cases)
+    custom: []
+      # - to:
+      #   - podSelector:
+      #       matchLabels:
+      #         app: redis
+      #   ports:
+      #   - protocol: TCP
+      #     port: 6379
 autoscale:
   enabled: false
   minSlaveReplicas: 1
