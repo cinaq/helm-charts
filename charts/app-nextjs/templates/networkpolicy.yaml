@@ -2,13 +2,13 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: {{ include "app-mendix.fullname" . }}
+  name: {{ include "app-nextjs.fullname" . }}
   labels:
-    {{- include "app-mendix.labels" . | nindent 4 }}
+    {{- include "app-nextjs.labels" . | nindent 4 }}
 spec:
   podSelector:
     matchLabels:
-      {{- include "app-mendix.selectorLabels" . | nindent 6 }}
+      {{- include "app-nextjs.selectorLabels" . | nindent 6 }}
   policyTypes:
   - Ingress
   - Egress
