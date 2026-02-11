@@ -126,8 +126,6 @@ networkPolicy:
       enabled: true
       ports:
         - protocol: TCP
-          port: 80
-        - protocol: TCP
           port: 443
       # Optionally exclude internal cluster CIDRs
       exceptCIDRs: []
