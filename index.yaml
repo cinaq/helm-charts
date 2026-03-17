@@ -3,6 +3,16 @@ entries:
   app-generic:
   - apiVersion: v2
     appVersion: 1.0.0
+    created: "2026-03-17T19:50:11.050014481Z"
+    description: A Helm chart for deploying a generic applications on low-ops platform
+    digest: 4108049aace45efd963de114f1df77ce92238ff8905c50123ff49b9d7538e4ef
+    name: app-generic
+    type: application
+    urls:
+    - https://github.com/cinaq/helm-charts/releases/download/app-generic-0.4.0/app-generic-0.4.0.tgz
+    version: 0.4.0
+  - apiVersion: v2
+    appVersion: 1.0.0
     created: "2026-02-11T18:21:45.748334812Z"
     description: A Helm chart for deploying a generic applications on low-ops platform
     digest: 3f27f58ff60b06fc929ff699a4b1b3015b3fc038555f199af8767705bf3c987e
@@ -92,6 +102,20 @@ entries:
     - https://github.com/cinaq/helm-charts/releases/download/app-generic-0.1.0/app-generic-0.1.0.tgz
     version: 0.1.0
   app-mendix:
+  - apiVersion: v2
+    created: "2026-03-17T19:50:11.328162293Z"
+    description: Mendix Application Chart.
+    digest: d76d0633f516fea04a9c3612d2aa6283145e7454eb31e55a35c58627175bf8f9
+    icon: https://cinaq.github.io/helm-charts/icons/mendix-logo.png
+    maintainers:
+    - email: x@cinaq.com
+      name: Xiwen Cheng
+    - email: viktor@cinaq.com
+      name: Viktor Berlov
+    name: app-mendix
+    urls:
+    - https://github.com/cinaq/helm-charts/releases/download/app-mendix-3.3.0/app-mendix-3.3.0.tgz
+    version: 3.3.0
   - apiVersion: v2
     created: "2026-02-11T18:21:45.926044414Z"
     description: Mendix Application Chart.
@@ -529,6 +553,16 @@ entries:
     - https://github.com/cinaq/helm-charts/releases/download/app-mendix-1.0.0/app-mendix-1.0.0.tgz
     version: 1.0.0
   app-nextjs:
+  - apiVersion: v2
+    appVersion: 1.0.0
+    created: "2026-03-17T19:50:11.59162566Z"
+    description: A Helm chart for deploying a nextjs applications on low-ops platform
+    digest: 561a6587837d81e7def7a87edd6d3f9e85923ba172563fef88eef2da4c00b4a7
+    name: app-nextjs
+    type: application
+    urls:
+    - https://github.com/cinaq/helm-charts/releases/download/app-nextjs-0.4.0/app-nextjs-0.4.0.tgz
+    version: 0.4.0
   - apiVersion: v2
     appVersion: 1.0.0
     created: "2026-02-11T18:21:46.127052125Z"
@@ -1047,4 +1081,4 @@ entries:
     urls:
     - https://github.com/cinaq/helm-charts/releases/download/retraced-0.1.0/retraced-0.1.0.tgz
     version: 0.1.0
-generated: "2026-02-11T18:21:46.127547181Z"
+generated: "2026-03-17T19:50:11.592679734Z"
