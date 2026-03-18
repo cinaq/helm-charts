@@ -113,6 +113,15 @@ networkPolicy:
   
   # Egress configuration
   egress:
+    # PostgreSQL database
+    postgresql:
+      enabled: true
+      port: 5432
+      namespaceSelector: {}
+        # name: lowops-data
+      podSelector: {}
+        # cnpg.io/cluster: my-cluster
+
     # S3 Gateway (Minio)
     s3Gateway:
       enabled: true
@@ -138,6 +147,8 @@ networkPolicy:
       ports:
         - protocol: TCP
           port: 443
+        - protocol: UDP
+          port: 53
         - protocol: TCP
           port: 5432
       # Optionally exclude internal cluster CIDRs
