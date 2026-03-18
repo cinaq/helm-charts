@@ -91,7 +91,17 @@ networkPolicy:
       # app.kubernetes.io/name: ingress-nginx
   
   # Egress configuration
-  egress:    
+  egress:
+    # PostgreSQL database
+    postgresql:
+      enabled: true
+      port: 5432
+      # Leave empty for same namespace, or specify:
+      namespaceSelector: {}
+        # name: lowops-data
+      podSelector: {}
+        # cnpg.io/cluster: my-cluster
+
     # S3 Gateway (Minio)
     s3Gateway:
       enabled: true
