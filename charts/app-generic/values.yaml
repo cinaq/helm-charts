@@ -129,6 +129,8 @@ networkPolicy:
           port: 443
         - protocol: TCP
           port: 5432
+        - protocol: UDP
+          port: 53
       # Optionally exclude internal cluster CIDRs
       exceptCIDRs: []
         # - 10.0.0.0/8
