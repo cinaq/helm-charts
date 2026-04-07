@@ -1,8 +1,8 @@
 {
-  "charts/lowops-platform": "0.1.24",
-  "charts/app-nextjs": "0.1.3",
-  "charts/app-mendix": "3.0.9",
-  "charts/app-generic": "0.1.6",
+  "charts/lowops-platform": "0.1.27",
+  "charts/app-nextjs": "0.4.1",
+  "charts/app-mendix": "3.3.1",
+  "charts/app-generic": "0.4.1",
   "charts/kanister-profile": "0.112.0",
   "charts/retraced": "0.1.3",
   "charts/kanister-actionset": "0.1.1",
