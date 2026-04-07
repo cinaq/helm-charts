@@ -1,0 +1,40 @@
+{
+  "packages": {
+    "charts/lowops-platform": {
+      "changelog-path": "CHANGELOG.md",
+      "release-type": "helm"
+    },
+    "charts/app-nextjs": {
+      "changelog-path": "CHANGELOG.md",
+      "release-type": "helm"
+    },
+    "charts/app-mendix": {
+      "changelog-path": "CHANGELOG.md",
+      "release-type": "helm"
+    },
+    "charts/app-generic": {
+      "changelog-path": "CHANGELOG.md",
+      "release-type": "helm"
+    },
+    "charts/kanister-profile": {
+      "changelog-path": "CHANGELOG.md",
+      "release-type": "helm"
+    },
+    "charts/retraced": {
+      "changelog-path": "CHANGELOG.md",
+      "release-type": "helm"
+    },
+    "charts/kanister-actionset": {
+      "changelog-path": "CHANGELOG.md",
+      "release-type": "helm"
+    },
+    "charts/kanister-blueprint": {
+      "changelog-path": "CHANGELOG.md",
+      "release-type": "helm"
+    },
+    "charts/loki-stack": {
+      "changelog-path": "CHANGELOG.md",
+      "release-type": "helm"
+    }
+  }
+}
