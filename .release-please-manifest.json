@@ -1,6 +1,6 @@
 {
   "charts/lowops-platform": "0.1.28",
-  "charts/app-nextjs": "0.4.2",
+  "charts/app-nextjs": "0.4.3",
   "charts/app-mendix": "3.3.2",
   "charts/app-generic": "0.4.2",
   "charts/kanister-profile": "0.112.0",
