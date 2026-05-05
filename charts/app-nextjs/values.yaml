@@ -41,7 +41,7 @@ securityContext: {}
 service:
   type: ClusterIP
   externalPort: 80
-  internalPort: 3000
+  internalPort: 8000
 
 ingress:
   enabled: true
