@@ -1,6 +1,12 @@
-{{- if .Values.ingress.enabled -}}
+{{- if and .Values.ingress.enabled .Values.ingress.hosts }}
 {{- $serviceName := include "app-mendix.fullname" . -}}
 {{- $servicePort := .Values.service.externalPort -}}
+{{- $hasTls := false -}}
+{{- range .Values.ingress.hosts }}
+  {{- if and .tls .tls.secretName (or (eq .tls.enabled true) (eq (printf "%v" .tls.enabled) "true")) }}
+    {{- $hasTls = true -}}
+  {{- end }}
+{{- end }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -14,19 +20,8 @@ metadata:
 spec:
   ingressClassName: {{ .Values.ingress.ingressClassName }}
   rules:
-    - host: {{ .Values.ingress.domain }}
-      http:
-        paths:
-          - backend:
-              service:
-                name: {{ $serviceName }}
-                port:
-                  number: {{ $servicePort }}
-            path: /
-            pathType: Prefix
-    {{- if .Values.ingress.addHosts }}
     {{- range .Values.ingress.hosts }}
-    - host: {{ . }}
+    - host: {{ .host }}
       http:
         paths:
           - backend:
@@ -34,14 +29,17 @@ spec:
                 name: {{ $serviceName }}
                 port:
                   number: {{ $servicePort }}
-            path: /
+            path: {{ .path | default "/" }}
             pathType: Prefix
     {{- end }}
-    {{- end }}
-  {{- if .Values.ingress.tls.enabled }}
+  {{- if $hasTls }}
   tls:
-  - hosts:
-    - {{ .Values.ingress.domain }}
-    secretName: {{ .Values.ingress.tls.secretName }}
-  {{- end }}      
-{{- end -}}
+    {{- range .Values.ingress.hosts }}
+    {{- if and .tls .tls.secretName (or (eq .tls.enabled true) (eq (printf "%v" .tls.enabled) "true")) }}
+    - hosts:
+        - {{ .host }}
+      secretName: {{ .tls.secretName }}
+    {{- end }}
+    {{- end }}
+  {{- end }}
+{{- end }}

@@ -80,14 +80,26 @@ service:
 ingress:
   enabled: true
   ingressClassName: nginx
-  domain: app.example.com
   annotations: {}
-  addHosts: false
   hosts: []
-  tls:
-    enabled: false
-  # Secrets must be manually created in the namespace.
-    secretName: secret-tls
+    # - host: app.example.com
+    #   path: /
+    #   visibility: public
+    #   tls:
+    #     enabled: false
+    #     secretName: app.example.com-tls
+
+ingressSso:
+  enabled: false
+  ingressClassName: nginx
+  annotations: {}
+  hosts: []
+    # - host: secure.app.example.com
+    #   path: /
+    #   visibility: public
+    #   tls:
+    #     enabled: false
+    #     secretName: secure.app.example.com-tls
 
 # Enable to create openshift route
 route:
