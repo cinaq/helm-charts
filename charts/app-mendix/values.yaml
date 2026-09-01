@@ -85,21 +85,12 @@ ingress:
     # - host: app.example.com
     #   path: /
     #   visibility: public
+    #   ssoRequired: false
+    #   ingressClassName: nginx
+    #   annotations: {}
     #   tls:
     #     enabled: false
     #     secretName: app.example.com-tls
-
-ingressSso:
-  enabled: false
-  ingressClassName: nginx
-  annotations: {}
-  hosts: []
-    # - host: secure.app.example.com
-    #   path: /
-    #   visibility: public
-    #   tls:
-    #     enabled: false
-    #     secretName: secure.app.example.com-tls
 
 # Enable to create openshift route
 route:
