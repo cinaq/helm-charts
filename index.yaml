@@ -134,8 +134,8 @@ entries:
       name: Viktor Berlov
     name: app-mendix
     urls:
-    - https://github.com/cinaq/helm-charts/releases/download/app-mendix-3.3.2/app-mendix-3.3.2.tgz
-    version: 3.3.2
+    - https://github.com/cinaq/helm-charts/releases/download/app-mendix-3.4.0/app-mendix-3.4.0.tgz
+    version: 3.4.0
   - apiVersion: v2
     created: "2026-03-18T07:55:34.732571537Z"
     description: Mendix Application Chart.
