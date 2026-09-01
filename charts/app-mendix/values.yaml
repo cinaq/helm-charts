@@ -82,7 +82,8 @@ ingress:
   ingressClassName: nginx
   annotations: {}
   hosts: []
-    # - host: app.example.com
+    # - id: route-id
+    #   host: app.example.com
     #   path: /
     #   visibility: public
     #   ssoRequired: false

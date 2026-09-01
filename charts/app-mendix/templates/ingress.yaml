@@ -3,12 +3,12 @@
 {{- $servicePort := .Values.service.externalPort -}}
 {{- $className := .Values.ingress.ingressClassName -}}
 {{- $globalAnnotations := .Values.ingress.annotations | default dict -}}
-{{- range $i, $host := .Values.ingress.hosts }}
+{{- range $host := .Values.ingress.hosts }}
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ printf "%s-%d" $.Release.Name $i }}
+  name: {{ printf "%s-%s" $.Release.Name ($host.id | toString | lower) }}
   labels:
     {{- include "app-mendix.labels" $ | nindent 4 }}
   {{- $annotations := mustMergeOverwrite (deepCopy $globalAnnotations) ($host.annotations | default dict) }}
