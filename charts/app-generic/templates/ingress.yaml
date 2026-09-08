@@ -17,7 +17,7 @@ metadata:
     {{- toYaml $annotations | nindent 4 }}
   {{- end }}
 spec:
-  ingressClassName: {{ if eq (toString $host.visibility) "private" }}nginx-internal{{ else }}{{ $host.ingressClassName | default $className }}{{ end }}
+  ingressClassName: {{ $host.ingressClassName | default $className }}
   rules:
     - host: {{ required "ingress.hosts[].host is required" $host.host }}
       http:
