@@ -1,47 +1,39 @@
-{{- if .Values.ingress.enabled -}}
+{{- if and (eq (printf "%v" .Values.ingress.enabled) "true") .Values.ingress.hosts }}
 {{- $serviceName := include "app-mendix.fullname" . -}}
 {{- $servicePort := .Values.service.externalPort -}}
+{{- $className := .Values.ingress.ingressClassName -}}
+{{- $globalAnnotations := .Values.ingress.annotations | default dict -}}
+{{- range $host := .Values.ingress.hosts }}
+---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ .Release.Name }}
+  name: {{ printf "%s-%s" $.Release.Name (required "ingress.hosts[].id is required" $host.id | toString | lower) }}
   labels:
-    {{- include "app-mendix.labels" . | nindent 4 }}
-  {{- with .Values.ingress.annotations }}
+    {{- include "app-mendix.labels" $ | nindent 4 }}
+  {{- $annotations := mustMergeOverwrite (deepCopy $globalAnnotations) ($host.annotations | default dict) }}
+  {{- if $annotations }}
   annotations:
-    {{- toYaml . | nindent 4 }}
+    {{- toYaml $annotations | nindent 4 }}
   {{- end }}
 spec:
-  ingressClassName: {{ .Values.ingress.ingressClassName }}
+  ingressClassName: {{ $host.ingressClassName | default $className }}
   rules:
-    - host: {{ .Values.ingress.domain }}
+    - host: {{ required "ingress.hosts[].host is required" $host.host }}
       http:
         paths:
-          - backend:
+          - path: {{ $host.path | default "/" }}
+            pathType: Prefix
+            backend:
               service:
                 name: {{ $serviceName }}
                 port:
                   number: {{ $servicePort }}
-            path: /
-            pathType: Prefix
-    {{- if .Values.ingress.addHosts }}
-    {{- range .Values.ingress.hosts }}
-    - host: {{ . }}
-      http:
-        paths:
-          - backend:
-              service:
-                name: {{ $serviceName }}
-                port:
-                  number: {{ $servicePort }}
-            path: /
-            pathType: Prefix
-    {{- end }}
-    {{- end }}
-  {{- if .Values.ingress.tls.enabled }}
+  {{- if and $host.tls $host.tls.secretName (eq (printf "%v" $host.tls.enabled) "true") }}
   tls:
-  - hosts:
-    - {{ .Values.ingress.domain }}
-    secretName: {{ .Values.ingress.tls.secretName }}
-  {{- end }}      
-{{- end -}}
+    - hosts:
+        - {{ $host.host }}
+      secretName: {{ $host.tls.secretName }}
+  {{- end }}
+{{- end }}
+{{- end }}

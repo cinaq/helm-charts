@@ -46,15 +46,18 @@ service:
 ingress:
   enabled: true
   ingressClassName: nginx
-  domain: app.example.com
-  path: /
   annotations: {}
-  addHosts: false
   hosts: []
-  tls:
-    enabled: false
-  # Secrets must be manually created in the namespace.
-    secretName: secret-tls
+    # - id: route-id
+    #   host: app.example.com
+    #   path: /
+    #   visibility: public
+    #   ssoRequired: false
+    #   ingressClassName: nginx
+    #   annotations: {}
+    #   tls:
+    #     enabled: false
+    #     secretName: app.example.com-tls
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
